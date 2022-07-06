@@ -70,7 +70,7 @@ letter [_A-Za-z]
 <multilineComment>"\n" { lineNumber++; }
 
 
-##{2}[^\\\n]+  { } // Single line comment
+"##"[^\n]*  { } // Single line comment
 
 
 . { return TOKEN_ERROR; }

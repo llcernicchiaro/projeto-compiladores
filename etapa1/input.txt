@@ -2,8 +2,9 @@ char alouuu
 \# 
 int 2
 float 2,5
-"Aiojdijsado"
-'A'
-comentario
 #\
-'A'
+"Aiojdijsado"
+'B'
+## comentario \n sal
+
+### 'A'
