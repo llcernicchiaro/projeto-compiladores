@@ -3,7 +3,7 @@ char alouuu
 int 2
 float 2,5
 #\
-"Aiojdijsado"
+"Aiojd\"ijsado"
 'B'
 ## comentario \n sal
 

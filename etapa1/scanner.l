@@ -41,7 +41,7 @@ letter [_A-Za-z]
 {letter}* { hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
 {digit}+ { hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
 \'[^\n']\' { hashInsert(yytext, LIT_CHAR); return LIT_CHAR; }
-\"([^\"]*)\" { hashInsert(yytext, LIT_STRING); return LIT_STRING; }
+\"([^\\\"]|\\.)*\" { hashInsert(yytext, LIT_STRING); return LIT_STRING; }
 {digit}+,{digit}+ { hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT; }
 
 "-" { return yytext[0]; }
