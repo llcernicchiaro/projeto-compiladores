@@ -47,7 +47,7 @@ program: declarationList;
 
 declarationList: declaration declarationList | ;
 
-declaration: globalVariableDeclaration | globalVectorDeclaration | funDec;
+declaration: globalVariableDeclaration | globalVectorDeclaration | functionDeclaration;
 
 type: KW_FLOAT | KW_CHAR | KW_INT;
 
@@ -55,7 +55,7 @@ literal: LIT_CHAR | LIT_FLOAT | LIT_INTEGER;
 
 literalList: literal literalListTail;
 
-literalListTail: ' ' literal | ;
+literalListTail: literal literalListTail | ;
 
 initialization: '(' literal ')';
 
@@ -65,116 +65,70 @@ globalVariableDeclaration: type TK_IDENTIFIER initialization ';';
 
 globalVectorDeclaration: type TK_IDENTIFIER '[' LIT_INTEGER ']' optionalInitialization ';';
 
+param: type TK_IDENTIFIER; 
 
-vecDec: KW_FLOAT TK_IDENTIFIER '[' LIT_INTEGER ']' arrayInit ';'
-    | KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' arrayInit ';'
-    | KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' arrayInit ';'
+optionalParamsList: param optionalParamsList | ;
+
+functionDeclaration: type TK_IDENTIFIER '(' optionalParamsList ')' commandBlock;
+
+commandBlock: '{' commandList '}';
+
+commandList: command ';' commandList | ;
+
+command: assignment 
+    | readCommand
+    | printCommand
+    | returnCommand
+    | ifCommand 
+    | whileCommand 
+    | commandBlock
+    | ;
+
+assignment: TK_IDENTIFIER ASSIGNMENT expression | 
+    TK_IDENTIFIER '[' expression ']' ASSIGNMENT expression
     ;
 
-funDec: KW_FLOAT TK_IDENTIFIER '(' paramList ')' cmd
-    | KW_CHAR TK_IDENTIFIER '(' paramList ')' cmd
-    | KW_INT TK_IDENTIFIER '(' paramList ')' cmd
-    | KW_FLOAT TK_IDENTIFIER '(' ')' cmd
-    | KW_CHAR TK_IDENTIFIER '(' ')' cmd
-    | KW_INT TK_IDENTIFIER '(' ')' cmd
+readCommand: KW_READ TK_IDENTIFIER optionalIndex;
+
+optionalIndex: '[' expression ']' | ;
+
+printCommand: KW_PRINT printParamList;
+
+printParam: LIT_STRING | expression;
+
+printParamList: printParam printParamList | ;
+
+returnCommand: KW_RETURN expression;
+
+ifCommand: KW_IF '(' expression ')' command optionalElse;
+
+optionalElse: KW_ELSE command | ;
+
+whileCommand: KW_WHILE '(' expression ')' command;
+
+expression: TK_IDENTIFIER
+    | TK_IDENTIFIER '[' expression ']'
+    | literal
+    | expression '+' expression
+    | expression '-' expression
+    | expression '.' expression
+    | expression '/' expression
+    | expression '>' expression
+    | expression '<' expression
+    | expression OPERATOR_LE expression
+    | expression OPERATOR_GE expression
+    | expression OPERATOR_EQ expression
+    | expression OPERATOR_DIF expression
+    | expression '&' expression
+    | expression '|' expression
+    | expression '~' expression
+    | '(' expression ')'
+    | functionCall
     ;
 
-charIntType: KW_CHAR
-    | KW_INT
-    ;
+functionCall: TK_IDENTIFIER '(' functionParamsList ')';
 
-litCharInt: LIT_CHAR
-    | LIT_INTEGER
-    ;
-
-arrayInit: ':' valorVetor
-    | 
-    ;
-
-valorVetor: litCharInt
-    | litCharInt valorVetor
-    ;
-
-
-cmdBlock: '{' cmdList '}'
-    ;
-
-cmdList: cmd ';' cmdList
-    | label cmdList
-    |  
-    ;
-
-assignment: TK_IDENTIFIER '=' expr
-    | TK_IDENTIFIER '[' expr ']' '=' expr
-    ;
-
-expr: litCharInt
-    | TK_IDENTIFIER
-    | TK_IDENTIFIER '[' expr ']'
-    | expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
-    | expr '>' expr
-    | expr '<' expr
-    | expr OPERATOR_EQ expr
-    | expr OPERATOR_DIF expr
-    | expr OPERATOR_LE expr
-    | expr OPERATOR_GE expr
-    | '(' expr ')'
-    | KW_READ
-    | funcCall
-    ;
-
-printCmd: KW_PRINT printParams
-    ;
-
-printParams: printParam
-    | printParam ',' printParams
-    ;
-
-printParam: LIT_STRING
-    | expr
-    ;
-
-cmd: assignment 
-    | printCmd 
-    | whileCmd 
-    | ifCmd 
-    | returnCmd
-    | cmdBlock
-    |
-    ;
-
-whileCmd: KW_WHILE expr cmd
-    ;
-
-funcCall: TK_IDENTIFIER '(' paramsFuncCall ')'
-    | TK_IDENTIFIER '(' ')'
-    ;
-
-paramsFuncCall: expr ',' paramsFuncCall
-    | expr
-    ;
-
-label: TK_IDENTIFIER ':'
-
-ifCmd: KW_IF expr cmd elseIfOptional
-    ;
-
-elseIfOptional: KW_ELSE cmd
-    |
-    ;
-
-returnCmd: KW_RETURN expr
-    ;
-
-paramList: param ',' paramList
-    | param
-    ;
-
-param: type TK_IDENTIFIER
-    ;
+functionParamsList: expression functionParamsList| ;
 
 %%
 

@@ -2,7 +2,7 @@
 	// Douglas Gehring - 00243682
 	// Lorenzo Cernicchiaro - 00287718
 
-	#include "yy.tab.h"
+	#include "y.tab.h"
 	#include "hash.h"
 	int running = 1;
 	int lineNumber = 1;

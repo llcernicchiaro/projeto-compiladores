@@ -2,6 +2,7 @@
 // Lorenzo Cernicchiaro - 00287718
 
 #include <stdio.h>
+#include "y.tab.c"
 
 int main(int argc, char **argv)
 {
