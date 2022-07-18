@@ -37,9 +37,10 @@
 
 %token TOKEN_ERROR    
 
-/* %left '<' '>' OPERATOR_EQ OPERATOR_DIF OPERATOR_LE OPERATOR_GE */
+%left '~' '&' '|'
+%left '<' '>' OPERATOR_EQ OPERATOR_DIF OPERATOR_LE OPERATOR_GE
 %left '+' '-'
-%left '*' '/'
+%left '.' '/'
 
 %%
 
