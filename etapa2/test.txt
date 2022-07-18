@@ -4,7 +4,6 @@ char c ('x');
 char d (100);
 int a ('A');
 int i(1);
-int v[10];
 int v[10] 'a' 0 0 0 0 0 0 0 0 0;
 int matrix[100]; 
 float f (2,5);
@@ -45,7 +44,7 @@ int main ()
     
   if (i==100)
     {
-    print "Nao tem como isso...\n";
+    print "Nao tem como isso...\n"
     }
   else
     print "OK!\n"; {{}}
@@ -53,8 +52,9 @@ int main ()
 
 int incn (int x int n )
   {
-  return x + n;
+  return x + n
   }
 
 ## end of file
   
+

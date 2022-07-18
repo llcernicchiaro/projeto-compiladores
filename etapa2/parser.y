@@ -73,7 +73,9 @@ functionDeclaration: type TK_IDENTIFIER '(' optionalParamsList ')' commandBlock;
 
 commandBlock: '{' commandList '}';
 
-commandList: command ';' commandList | ;
+commandList: command commandListTail;
+
+commandListTail: ';' command commandListTail | ;
 
 command: assignment 
     | readCommand
@@ -128,7 +130,7 @@ expression: TK_IDENTIFIER
 
 functionCall: TK_IDENTIFIER '(' functionParamsList ')';
 
-functionParamsList: expression functionParamsList| ;
+functionParamsList: expression functionParamsList | ;
 
 %%
 
