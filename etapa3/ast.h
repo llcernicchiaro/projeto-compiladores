@@ -2,11 +2,9 @@
 #define AST_HEADER
 
 #include "hash.h"
+#include "symbols.h"
 
 #define MAXSONS 4
-
-#define AST_SYMBOL 1
-#define AST_ADD 2
 
 typedef struct astnode
 {

@@ -24,6 +24,12 @@ int main(int argc, char **argv)
         exit(2);
     }
 
+    if ((out = fopen(argv[2], "w+")) == 0)
+    {
+        printf("Cannot open the result file!\n");
+        exit(1);
+    }
+
     yyparse();
 
     printf("\nLineNumber %d", lineNumber);
