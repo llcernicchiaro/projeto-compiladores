@@ -1,6 +1,7 @@
 #ifndef AST_HEADER
 #define AST_HEADER
 
+#include <stdlib.h>
 #include "hash.h"
 #include "symbols.h"
 

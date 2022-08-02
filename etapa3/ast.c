@@ -159,6 +159,9 @@ void astPrint(AST *node, int level)
     case AST_DIF:
         fprintf(stderr, "AST_DIF");
         break;
+    case AST_BRACKETS_EXPR:
+        fprintf(stderr, "AST_BRACKETS_EXPR");
+        break;
     default:
         fprintf(stderr, "AST_UNKNOWN) %d \n", node->type);
         break;
@@ -183,7 +186,6 @@ void generateSource(AST *node, FILE *out)
     if (temp == 0)
         return;
 
-    fprintf(stderr, "gerando codigo %d \n", node->type);
     switch (temp->type)
     {
     case AST_ADD:
@@ -261,13 +263,13 @@ void generateSource(AST *node, FILE *out)
         generateSource(temp->son[1], out);
         break;
     case AST_LITERAL_LIST:
-        generateSource(temp->son[0], out);
         fprintf(out, " ");
+        generateSource(temp->son[0], out);
         generateSource(temp->son[1], out);
         break;
     case AST_LITERAL_LIST_TAIL:
-        generateSource(temp->son[0], out);
         fprintf(out, " ");
+        generateSource(temp->son[0], out);
         generateSource(temp->son[1], out);
         break;
     case AST_INITIALIZATION:
@@ -302,9 +304,9 @@ void generateSource(AST *node, FILE *out)
         fprintf(out, "float ");
         break;
     case AST_CMD_BLOCK:
-        fprintf(out, "{\n");
+        fprintf(out, "\n{\n");
         generateSource(temp->son[0], out);
-        fprintf(out, "}");
+        fprintf(out, "\n}\n");
         break;
     case AST_CMD_LIST:
         generateSource(temp->son[0], out);
@@ -327,9 +329,9 @@ void generateSource(AST *node, FILE *out)
         generateSource(temp->son[1], out);
         break;
     case AST_READ:
-        fprintf(out, "read");
+        fprintf(out, "read ");
+        fprintf(out, "%s", node->symbol->text);
         generateSource(temp->son[0], out);
-        generateSource(temp->son[1], out);
         break;
     case AST_OPTIONAL_INDEX:
         fprintf(out, "[");
@@ -348,14 +350,17 @@ void generateSource(AST *node, FILE *out)
         fprintf(out, ")");
         break;
     case AST_PARAMS_FUNC_CALL:
-        fprintf(out, " ");
         generateSource(temp->son[0], out);
-        generateSource(temp->son[1], out);
+        if (temp->son[1] != NULL)
+        {
+            fprintf(out, " ");
+            generateSource(temp->son[1], out);
+        }
         break;
     case AST_IF:
         fprintf(out, "if(");
         generateSource(temp->son[0], out);
-        fprintf(out, ")\n");
+        fprintf(out, ")");
         generateSource(temp->son[1], out);
         generateSource(temp->son[2], out);
         break;
@@ -384,7 +389,11 @@ void generateSource(AST *node, FILE *out)
         break;
     case AST_OPTIONAL_PARAMS_LIST:
         generateSource(temp->son[0], out);
-        generateSource(temp->son[1], out);
+        if (temp->son[1] != NULL)
+        {
+            fprintf(out, " ");
+            generateSource(temp->son[1], out);
+        }
         break;
     case AST_RETURN:
         fprintf(out, "return ");
@@ -403,6 +412,11 @@ void generateSource(AST *node, FILE *out)
         generateSource(temp->son[0], out);
         fprintf(out, " & ");
         generateSource(temp->son[1], out);
+        break;
+    case AST_BRACKETS_EXPR:
+        fprintf(out, "(");
+        generateSource(temp->son[0], out);
+        fprintf(out, ")");
         break;
     default:
         fprintf(stderr, "UNKNOWN(%s)\n", temp->symbol->text);

@@ -2,7 +2,13 @@
 // Lorenzo Cernicchiaro - 00287718
 
 #include <stdio.h>
-#include "y.tab.c"
+#include <stdlib.h>
+#include "hash.h"
+#include "ast.h"
+#include "y.tab.h"
+
+extern FILE *yyin;
+extern FILE *out;
 
 int main(int argc, char **argv)
 {
@@ -31,8 +37,6 @@ int main(int argc, char **argv)
     }
 
     yyparse();
-
-    printf("\nLineNumber %d", lineNumber);
 
     hashPrint();
 

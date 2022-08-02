@@ -2,8 +2,9 @@
 	// Douglas Gehring - 00243682
 	// Lorenzo Cernicchiaro - 00287718
 
-	#include "y.tab.h"
+	#include "ast.h"
 	#include "hash.h"
+	#include "y.tab.h"
 	int running = 1;
 	int lineNumber = 1;
 	int isRunning();
@@ -75,9 +76,6 @@ letter [_A-Za-z]
 
 . { return TOKEN_ERROR; }
 %%
-
-#include "main.c"
-#include "hash.c"
 
 int yywrap() {
 	running = 0;

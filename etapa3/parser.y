@@ -1,21 +1,22 @@
-// Douglas Gehring - 00243682
-// Lorenzo Cernicchiaro - 00287718
 %{
+  // Douglas Gehring - 00243682
+  // Lorenzo Cernicchiaro - 00287718
     #include <stdio.h>
     #include <stdlib.h>
     #include "ast.h"
 
     extern int yylineno;
-    extern FILE *out = NULL;
+    FILE *out = NULL;
 
-    int yylex(void);
+    int yylex();
     void yyerror (char *s);
+    int getLineNumber();
 %}
 
 %union
 {
-    HASH_NODE* symbol;
-    AST* ast;
+    HASH_NODE *symbol;
+    AST *ast;
 }
 
 %start program
@@ -136,7 +137,7 @@ assignment: TK_IDENTIFIER ASSIGNMENT expression                 { $$ = astCreate
     | TK_IDENTIFIER '[' expression ']' ASSIGNMENT expression    { $$ = astCreate(AST_ASSIGNMENT, $1, $3, $6, 0, 0); }
     ;
 
-readCommand: KW_READ TK_IDENTIFIER optionalIndex    { $$ = astCreate(AST_READ, $2, $3, 0, 0, 0); }
+readCommand: KW_READ TK_IDENTIFIER optionalIndex { $$ = astCreate(AST_READ, $2, $3, 0, 0, 0); }
     ;
 
 optionalIndex: '[' expression ']' { $$ = astCreate(AST_OPTIONAL_INDEX, 0, $2, 0, 0, 0); }
@@ -182,8 +183,8 @@ expression: TK_IDENTIFIER                   { $$ = astCreate(AST_SYMBOL, $1, 0, 
     | expression OPERATOR_DIF expression    { $$ = astCreate(AST_DIF, 0, $1, $3, 0, 0); }
     | expression '&' expression             { $$ = astCreate(AST_AND, 0, $1, $3, 0, 0); }
     | expression '|' expression             { $$ = astCreate(AST_OR, 0, $1, $3, 0, 0);  }
-    | '~' expression                        { $$ = astCreate(AST_NOT, 0, $2, 0, 0); }
-    | '(' expression ')'                    { $$ = $2; }
+    | '~' expression                        { $$ = astCreate(AST_NOT, 0, $2, 0, 0, 0); }
+    | '(' expression ')'                    { $$ = astCreate(AST_BRACKETS_EXPR, 0, $2, 0, 0, 0); }
     | functionCall                          { $$ = $1; }
     ;
 

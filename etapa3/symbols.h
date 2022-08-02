@@ -40,3 +40,4 @@
 #define AST_AND                         40
 #define AST_OR                          41
 #define AST_NOT                         42
+#define AST_BRACKETS_EXPR               43
