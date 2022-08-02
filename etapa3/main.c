@@ -9,10 +9,10 @@ int main(int argc, char **argv)
 
     int tok;
 
-    if (argc < 2)
+    if (argc < 3)
     {
 
-        fprintf(stderr, "Call ./etapa3 file_name\n");
+        fprintf(stderr, "Call ./etapa3 in_file_name out_file_name\n");
         exit(1);
     }
 
@@ -22,6 +22,12 @@ int main(int argc, char **argv)
     {
         fprintf(stderr, "Cannot open file %s\n", argv[1]);
         exit(2);
+    }
+
+    if ((out = fopen(argv[2], "w+")) == 0)
+    {
+        printf("Cannot open the result file!\n");
+        exit(1);
     }
 
     yyparse();
