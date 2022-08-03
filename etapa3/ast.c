@@ -200,7 +200,7 @@ void generateSource(AST *node, FILE *out)
         break;
     case AST_MUL:
         generateSource(temp->son[0], out);
-        fprintf(out, " * ");
+        fprintf(out, " . ");
         generateSource(temp->son[1], out);
         break;
     case AST_DIV:
@@ -247,9 +247,9 @@ void generateSource(AST *node, FILE *out)
         fprintf(out, "%s ", temp->symbol->text);
         if (temp->son[1] != NULL)
         {
-            fprintf(out, "<- [");
+            fprintf(out, "[");
             generateSource(temp->son[0], out);
-            fprintf(out, "]");
+            fprintf(out, "] <- ");
             generateSource(temp->son[1], out);
         }
         else

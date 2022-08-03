@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include "hash.h"
 #include "ast.h"
-#include "y.tab.h"
 
+extern int yyparse();
 extern FILE *yyin;
 extern FILE *out;
 

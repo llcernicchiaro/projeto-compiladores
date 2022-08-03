@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "symbols.h": "c"
+        "symbols.h": "c",
+        "y.tab.h": "c"
     }
 }

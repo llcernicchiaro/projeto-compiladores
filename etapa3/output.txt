@@ -10,7 +10,7 @@ int main()
 a <- 0;
 a <- a - i;
 a <- 5;
-v <- [a]55;
+v [a] <-55;
 print v[5];
 print a;
 i <- 2;
