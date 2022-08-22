@@ -39,11 +39,11 @@ letter [_A-Za-z]
 "!=" { return OPERATOR_DIF; }
 
 
-{letter}* { yylval.symbol = hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
-{digit}+ { yylval.symbol = hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
-\'[^\n']\' { yylval.symbol = hashInsert(yytext, LIT_CHAR); return LIT_CHAR; }
-\"([^\\\"]|\\.)*\" { yylval.symbol = hashInsert(yytext, LIT_STRING); return LIT_STRING; }
-{digit}+,{digit}+ { yylval.symbol = hashInsert(yytext, LIT_FLOAT); return LIT_FLOAT; }
+{letter}* { yylval.symbol = hashInsert(yytext, SYMBOL_IDENTIFIER); return TK_IDENTIFIER; }
+{digit}+ { yylval.symbol = hashInsert(yytext, SYMBOL_LITINT); return LIT_INTEGER; }
+\'[^\n']\' { yylval.symbol = hashInsert(yytext, SYMBOL_LITCHAR); return LIT_CHAR; }
+\"([^\\\"]|\\.)*\" { yylval.symbol = hashInsert(yytext, SYMBOL_STRING); return LIT_STRING; }
+{digit}+,{digit}+ { yylval.symbol = hashInsert(yytext, SYMBOL_LITFLOAT); return LIT_FLOAT; }
 
 "-" { return yytext[0]; }
 ";" { return yytext[0]; }

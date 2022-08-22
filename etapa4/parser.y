@@ -4,6 +4,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include "ast.h"
+    #include "semantic.h"
 
     extern int yylineno;
     FILE *out = NULL;
@@ -61,7 +62,7 @@
 
 %%
 
-program: declarationList  { $$ = $1; astPrint($1,0); generateSource($1, out); }
+program: declarationList  { $$ = $1; astPrint($1,0); generateSource($1, out); checkAndSetDeclarations($1); }
   ;
 
 declarationList: declaration declarationList { $$ = astCreate(AST_DEC_LIST, 0, $1, $2, 0, 0); }

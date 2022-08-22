@@ -2,6 +2,7 @@
 // Lorenzo Cernicchiaro - 00287718
 
 #include "hash.h"
+#include "ast.h"
 
 HASH_NODE *table[HASH_SIZE];
 
@@ -75,4 +76,25 @@ void hashPrint()
             printf("Table [%d] has %s\n", i, node->text);
         }
     }
+}
+
+int hashCheckUndeclared()
+{	 
+    HASH_NODE *node;
+	int undeclared = 0;
+
+	int i;
+    
+	for (i = 0; i < HASH_SIZE; i++){
+			for( node = table[i]; node; node = node->next)
+            {
+				if (node->type == SYMBOL_IDENTIFIER) 
+                {
+					fprintf(stderr, "SEMANTIC ERROR - Identifier '%s' wasn't declared.\n", node->text);
+					++ undeclared;
+				}
+			}
+	}
+
+	return undeclared;
 }
