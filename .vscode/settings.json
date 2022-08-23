@@ -2,6 +2,7 @@
     "files.associations": {
         "stdio.h": "c",
         "symbols.h": "c",
-        "y.tab.h": "c"
+        "y.tab.h": "c",
+        "ast.h": "c"
     }
 }

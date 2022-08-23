@@ -18,6 +18,7 @@
 #define SYMBOL_VARIABLE 6
 #define SYMBOL_FUNCTION 7
 #define SYMBOL_VECTOR 8
+#define SYMBOL_PARAM 9
 
 #define DATA_TYPE_INT 1
 #define DATA_TYPE_FLOAT 2
@@ -28,6 +29,7 @@ typedef struct hash_node
     int type;
     int dataType;
     char *text;
+    struct AST *arguments;
     struct hash_node *next;
 } HASH_NODE;
 

@@ -59,6 +59,7 @@ HASH_NODE *hashInsert(char *text, int type)
     newNode->text = (char *)calloc(strlen(text) + 1, sizeof(char));
     strcpy(newNode->text, text);
     newNode->next = table[address];
+    newNode->arguments = NULL;
     table[address] = newNode;
 
     return newNode;
@@ -73,7 +74,7 @@ void hashPrint()
     {
         for (node = table[i]; node; node = node->next)
         {
-            printf("Table [%d] has %s\n", i, node->text);
+            printf("Table [%d] has %s dataType: %d type: %d\n", i, node->text, node->dataType, node->type);
         }
     }
 }
@@ -90,7 +91,7 @@ int hashCheckUndeclared()
             {
 				if (node->type == SYMBOL_IDENTIFIER) 
                 {
-					fprintf(stderr, "SEMANTIC ERROR - Identifier '%s' wasn't declared.\n", node->text);
+					fprintf(stderr, "Semantic ERROR: Identifier '%s' wasn't declared.\n", node->text);
 					++ undeclared;
 				}
 			}

@@ -11,6 +11,12 @@ extern int semanticErrors;
 
 void checkAndSetDeclarations(AST *node);
 void checkUndeclared();
+void checkOperands(AST *node);
+void checkParameters(AST *node);
+
+void checkArgumentsSize(AST *argsDeclared, AST *argsCall);
 void setDataTypeWith(AST *node);
+void checkBothOperators(AST *node);
+int isNumber(AST *son);
 
 #endif

@@ -62,7 +62,16 @@
 
 %%
 
-program: declarationList  { $$ = $1; astPrint($1,0); generateSource($1, out); checkAndSetDeclarations($1); }
+program: declarationList  { $$ = $1; 
+                            astPrint($1,0); 
+                            generateSource($1, out);
+                            checkAndSetDeclarations($1); 
+                            checkUndeclared($1);
+                            checkOperands($1);
+                            // checkParameters($1);
+                            if (semanticErrors > 0)
+                             exit(4);
+                          }
   ;
 
 declarationList: declaration declarationList { $$ = astCreate(AST_DEC_LIST, 0, $1, $2, 0, 0); }
