@@ -68,9 +68,9 @@ program: declarationList  { $$ = $1;
                             checkAndSetDeclarations($1); 
                             checkUndeclared($1);
                             checkOperands($1);
-                            // checkParameters($1);
-                            if (semanticErrors > 0)
-                             exit(4);
+                            checkParameters($1);
+                            // if (semanticErrors > 0)
+                            //  exit(4);
                           }
   ;
 

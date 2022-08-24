@@ -1,25 +1,16 @@
-char c ('x');
-char d (100);
 int a ('A');
-int a ('A');
-int i (1);
-int v[10] 'a' 0 0 0 0 0 0 0 0 0;
-int v[10] 'a' 0 0 0 0 0 0 0 0 0;
-int matrix[100];
-float f (2,5);
 char example() 
 {
 return 'A';
 
 }
-int incn(int x char n) 
+int incn(int i char c float f) 
 {
 if(a == 15)
 {
-a <- v[5] + incn(x n);
-print "A era=15\n";
+a <- v[5] + incn(3 2,5 a);
 
 }
 ;
-return b + example(x)
+return b + 5
 }

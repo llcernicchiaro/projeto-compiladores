@@ -3,6 +3,8 @@
         "stdio.h": "c",
         "symbols.h": "c",
         "y.tab.h": "c",
-        "ast.h": "c"
-    }
+        "ast.h": "c",
+        "hash.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

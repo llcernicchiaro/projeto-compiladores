@@ -163,26 +163,24 @@ void checkArgumentsSize(AST *argsDeclared, AST *argsCall)
 {
     AST *actualDeclared = NULL;
     AST *actualCall = NULL;
-    if (argsDeclared->son[1] && argsCall->son[1])
-    {
-        actualDeclared = argsDeclared->son[1];
-        actualCall = argsCall->son[1];
-    }
-
     int declaredLength = 0;
     int callLength = 0;
 
+    if (argsDeclared)
+        actualDeclared = argsDeclared;
+
+    if (argsCall)
+        actualCall = argsCall->son[0];
+
     while (actualDeclared != NULL)
     {
-
         declaredLength += 1;
-
         actualDeclared = actualDeclared->son[1];
     }
 
     while (actualCall != NULL)
     {
-        actualCall += 1;
+        callLength += 1;
         actualCall = actualCall->son[1];
     }
 
@@ -198,6 +196,53 @@ void checkArgumentsSize(AST *argsDeclared, AST *argsCall)
     }
 }
 
+bool checkCompatibleTypes(int type, HASH_NODE *symbol)
+{
+    bool isVar = symbol->type == 6;
+    bool isCharOrIntVar = isVar && symbol->dataType == DATA_TYPE_INT || symbol->dataType == DATA_TYPE_CHAR;
+    bool isCharOrIntLit = symbol->type == SYMBOL_LITINT || symbol->type == SYMBOL_LITCHAR;
+
+    switch (type)
+    {
+    case DATA_TYPE_INT:
+    case DATA_TYPE_CHAR:
+        if (isCharOrIntVar || isCharOrIntLit)
+            return true;
+        else
+            return false;
+    case DATA_TYPE_FLOAT:
+        if ((isVar && symbol->dataType == DATA_TYPE_FLOAT) || symbol->type == SYMBOL_LITFLOAT)
+            return true;
+        else
+            return false;
+    }
+}
+
+void checkArgumentsTypes(AST *argsDeclared, AST *argsCall)
+{
+    AST *actualDeclared = NULL;
+    AST *actualCall = NULL;
+    int argIndex = 0;
+
+    if (argsDeclared)
+        actualDeclared = argsDeclared;
+
+    if (argsCall)
+        actualCall = argsCall->son[0];
+
+    while (actualDeclared != NULL && actualCall != NULL)
+    {
+        if (!checkCompatibleTypes(actualDeclared->son[0]->symbol->dataType, actualCall->son[0]->symbol))
+        {
+            fprintf(stderr, "Semantic ERROR: argument %d with wrong type in function call\n", argIndex);
+            ++semanticErrors;
+        }
+        argIndex += 1;
+        actualDeclared = actualDeclared->son[1];
+        actualCall = actualCall->son[1];
+    }
+}
+
 void checkParameters(AST *node)
 {
     int i;
@@ -208,17 +253,8 @@ void checkParameters(AST *node)
     switch (node->type)
     {
     case AST_FUNC_CALL:
-        printf("teste %d\n", node->son[0]->type);
-        if (node->son[0])
-            checkArgumentsSize(node->symbol->arguments, node->son[0]);
-
-        //     // Se os tipos dos parametros sao compativeis
-        //     if ()
-        // {
-        //     fprintf(stderr, "Semantic ERROR: invalid operator on NOT\n");
-        //     ++semanticErrors;
-        // }
-
+        checkArgumentsSize(node->symbol->arguments, node);
+        checkArgumentsTypes(node->symbol->arguments, node);
         break;
     }
 
