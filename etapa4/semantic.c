@@ -86,6 +86,90 @@ void checkAndSetDeclarations(AST *node)
     }
 }
 
+void checkGlobalVectorDeclaration(AST *node) {
+
+    int i;
+    int type = 0;
+
+    if(node == 0) 
+        return;
+
+    switch (node->type) 
+    {
+        case AST_GLOBAL_VECTOR_DECLARATION:
+            checkVectorOptionalInitialization(node);
+            break;
+        default:
+            break;
+    }
+
+    for (i = 0; i < MAXSONS; ++i)
+    {
+        checkGlobalVectorDeclaration(node->son[i]);
+    }
+}
+
+void checkVectorOptionalInitialization(AST *node) {
+    
+    if(node->son[0] == 0 || node->son[1] == 0 || node->son[2] == 0 || node->symbol == 0) 
+        return;
+
+    int vectorType = node->son[0]->type;
+    char* vectorName = node->symbol->text;
+    int vectorSize = atoi(node->son[1]->symbol->text);
+    AST* currentVectorInitialization = node->son[2];
+
+    int vectorCount = 0;
+
+    while(currentVectorInitialization != 0)
+    {
+        switch (currentVectorInitialization->type) 
+        {
+            case AST_OPTIONAL_INITIALIZATION:
+                currentVectorInitialization = currentVectorInitialization->son[0];
+                break;
+            case AST_LITERAL_LIST:
+                if(currentVectorInitialization->son[0]) 
+                {
+                    if(!checkVectorInitializationCompatiableTypes(vectorType, currentVectorInitialization->son[0]->symbol))
+                    {
+                        fprintf(stderr, "Semantic ERROR: vector '%s' initialization type missmatch\n", vectorName);
+                        ++ semanticErrors;
+                    }
+
+                    ++ vectorCount;
+                }
+                currentVectorInitialization = currentVectorInitialization->son[1];
+                break;
+            case AST_LITERAL_LIST_TAIL:
+                if(currentVectorInitialization->son[0]) 
+                {
+                    if(!checkVectorInitializationCompatiableTypes(vectorType, currentVectorInitialization->son[0]->symbol))
+                    {
+                        fprintf(stderr, "Semantic ERROR: vector '%s' initialization type missmatch\n", vectorName);
+                        ++ semanticErrors;
+                    }
+
+                    ++ vectorCount;
+                }
+                currentVectorInitialization = currentVectorInitialization->son[1];
+                break;
+            default:
+                break;
+        }
+    }
+
+    if(vectorCount > vectorSize) 
+    {
+        fprintf(stderr, "Semantic ERROR: vector '%s' initialization size missmatch - too many arguments \n", vectorName);
+        ++ semanticErrors;
+    } else if (vectorCount < vectorSize) 
+    {
+        fprintf(stderr, "Semantic ERROR: vector '%s' initialization size missmatch - too fewer arguments \n", vectorName);
+        ++ semanticErrors;
+    }
+}
+
 void checkUndeclared()
 {
     semanticErrors += hashCheckUndeclared();
@@ -193,6 +277,26 @@ void checkArgumentsSize(AST *argsDeclared, AST *argsCall)
     {
         fprintf(stderr, "Semantic ERROR: too fewer arguments in function call\n");
         ++semanticErrors;
+    }
+}
+
+bool checkVectorInitializationCompatiableTypes(int type, HASH_NODE *symbol) 
+{
+    bool isCharOrIntLit = symbol->type == SYMBOL_LITINT || symbol->type == SYMBOL_LITCHAR;
+
+    switch (type)
+    {
+    case AST_INT:
+    case AST_CHAR:
+        if (isCharOrIntLit)
+            return true;
+        else
+            return false;
+    case AST_FLOAT:
+        if (symbol->type == SYMBOL_LITFLOAT)
+            return true;
+        else
+            return false;
     }
 }
 

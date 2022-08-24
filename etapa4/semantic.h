@@ -21,5 +21,8 @@ void checkArgumentsSize(AST *argsDeclared, AST *functionCall);
 void setDataTypeWith(AST *node);
 void checkBothOperators(AST *node);
 int isNumber(AST *son);
+void checkGlobalVectorDeclaration(AST *node);
+void checkVectorOptionalInitialization(AST *node);
+bool checkVectorInitializationCompatiableTypes(int type, HASH_NODE *symbol);
 
 #endif

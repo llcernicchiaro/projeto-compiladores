@@ -1,12 +1,10 @@
-\#
+
 char c ('x');
 char d (100);
 int a ('A');
 int a ('A');
 int i (1);
-int v[10] 'a' 0 0 0 0 0 0 0 0 0;
-int v[10] 'a' 0 0 0 0 0 0 0 0 0;
-int matrix[100]; 
+int v[10] 0 0 0 0 0 0 0 0 0 0 0;
 float f (2,5);
 
 int main () {
@@ -44,7 +42,7 @@ int main () {
   else
     print "OK!\n"; {{}}
   }
-#\
+
 
 int a ('A');
 
@@ -56,7 +54,7 @@ int incn (int i char c float f )
   {
     if (a == 15)
     {
-    a <- v[5] + incn(3 2,5 a);
+    a <- incn(3 2,5 a);
     };
 
   return b + 5

@@ -1,6 +1,6 @@
-Terminals unused in grammar
+Terminals which are not used
 
-    TOKEN_ERROR
+   TOKEN_ERROR
 
 
 State 57 conflicts: 1 shift/reduce
@@ -14,7 +14,7 @@ Grammar
     1 program: declarationList
 
     2 declarationList: declaration declarationList
-    3                | %empty
+    3                | /* empty */
 
     4 declaration: globalVariableDeclaration
     5            | globalVectorDeclaration
@@ -31,12 +31,12 @@ Grammar
    13 literalList: literal literalListTail
 
    14 literalListTail: literal literalListTail
-   15                | %empty
+   15                | /* empty */
 
    16 initialization: '(' literal ')'
 
    17 optionalInitialization: literalList
-   18                       | %empty
+   18                       | /* empty */
 
    19 globalVariableDeclaration: type TK_IDENTIFIER initialization ';'
 
@@ -45,7 +45,7 @@ Grammar
    21 param: type TK_IDENTIFIER
 
    22 optionalParamsList: param optionalParamsList
-   23                   | %empty
+   23                   | /* empty */
 
    24 functionDeclaration: type TK_IDENTIFIER '(' optionalParamsList ')' commandBlock
 
@@ -54,7 +54,7 @@ Grammar
    26 commandList: command commandListTail
 
    27 commandListTail: ';' command commandListTail
-   28                | %empty
+   28                | /* empty */
 
    29 command: assignment
    30        | readCommand
@@ -63,7 +63,7 @@ Grammar
    33        | ifCommand
    34        | whileCommand
    35        | commandBlock
-   36        | %empty
+   36        | /* empty */
 
    37 assignment: TK_IDENTIFIER ASSIGNMENT expression
    38           | TK_IDENTIFIER '[' expression ']' ASSIGNMENT expression
@@ -71,7 +71,7 @@ Grammar
    39 readCommand: KW_READ TK_IDENTIFIER optionalIndex
 
    40 optionalIndex: '[' expression ']'
-   41              | %empty
+   41              | /* empty */
 
    42 printCommand: KW_PRINT printParamList
 
@@ -79,14 +79,14 @@ Grammar
    44           | expression
 
    45 printParamList: printParam printParamList
-   46               | %empty
+   46               | /* empty */
 
    47 returnCommand: KW_RETURN expression
 
    48 ifCommand: KW_IF '(' expression ')' command optionalElse
 
    49 optionalElse: KW_ELSE command
-   50             | %empty
+   50             | /* empty */
 
    51 whileCommand: KW_WHILE '(' expression ')' command
 
@@ -112,151 +112,122 @@ Grammar
    70 functionCall: TK_IDENTIFIER '(' functionParamsList ')'
 
    71 functionParamsList: expression functionParamsList
-   72                   | %empty
+   72                   | /* empty */
 
 
 Terminals, with rules where they appear
 
-    $end (0) 0
-    '&' (38) 65
-    '(' (40) 16 24 48 51 68 70
-    ')' (41) 16 24 48 51 68 70
-    '+' (43) 55
-    '-' (45) 56
-    '.' (46) 57
-    '/' (47) 58
-    ';' (59) 19 20 27
-    '<' (60) 60
-    '>' (62) 59
-    '[' (91) 20 38 40 53
-    ']' (93) 20 38 40 53
-    '{' (123) 25
-    '|' (124) 66
-    '}' (125) 25
-    '~' (126) 67
-    error (256)
-    KW_CHAR (258) 8
-    KW_INT (259) 9
-    KW_FLOAT (260) 7
-    KW_IF (261) 48
-    KW_ELSE (262) 49
-    KW_WHILE (263) 51
-    KW_READ (264) 39
-    KW_PRINT (265) 42
-    KW_RETURN (266) 47
-    ASSIGNMENT (267) 37 38
-    OPERATOR_LE (268) 61
-    OPERATOR_GE (269) 62
-    OPERATOR_EQ (270) 63
-    OPERATOR_DIF (271) 64
-    TK_IDENTIFIER <symbol> (272) 19 20 21 24 37 38 39 52 53 70
-    LIT_INTEGER <symbol> (273) 12 20
-    LIT_FLOAT <symbol> (274) 11
-    LIT_CHAR <symbol> (275) 10
-    LIT_STRING <symbol> (276) 43
-    TOKEN_ERROR (277)
+$end (0) 0
+'&' (38) 65
+'(' (40) 16 24 48 51 68 70
+')' (41) 16 24 48 51 68 70
+'+' (43) 55
+'-' (45) 56
+'.' (46) 57
+'/' (47) 58
+';' (59) 19 20 27
+'<' (60) 60
+'>' (62) 59
+'[' (91) 20 38 40 53
+']' (93) 20 38 40 53
+'{' (123) 25
+'|' (124) 66
+'}' (125) 25
+'~' (126) 67
+error (256)
+KW_CHAR (258) 8
+KW_INT (259) 9
+KW_FLOAT (260) 7
+KW_IF (261) 48
+KW_ELSE (262) 49
+KW_WHILE (263) 51
+KW_READ (264) 39
+KW_PRINT (265) 42
+KW_RETURN (266) 47
+ASSIGNMENT (267) 37 38
+OPERATOR_LE (268) 61
+OPERATOR_GE (269) 62
+OPERATOR_EQ (270) 63
+OPERATOR_DIF (271) 64
+TK_IDENTIFIER (272) 19 20 21 24 37 38 39 52 53 70
+LIT_INTEGER (273) 12 20
+LIT_FLOAT (274) 11
+LIT_CHAR (275) 10
+LIT_STRING (276) 43
+TOKEN_ERROR (277)
 
 
 Nonterminals, with rules where they appear
 
-    $accept (39)
-        on left: 0
-    program <ast> (40)
-        on left: 1
-        on right: 0
-    declarationList <ast> (41)
-        on left: 2 3
-        on right: 1 2
-    declaration <ast> (42)
-        on left: 4 5 6
-        on right: 2
-    type <ast> (43)
-        on left: 7 8 9
-        on right: 19 20 21 24
-    literal <ast> (44)
-        on left: 10 11 12
-        on right: 13 14 16 54
-    literalList <ast> (45)
-        on left: 13
-        on right: 17
-    literalListTail <ast> (46)
-        on left: 14 15
-        on right: 13 14
-    initialization <ast> (47)
-        on left: 16
-        on right: 19
-    optionalInitialization <ast> (48)
-        on left: 17 18
-        on right: 20
-    globalVariableDeclaration <ast> (49)
-        on left: 19
-        on right: 4
-    globalVectorDeclaration <ast> (50)
-        on left: 20
-        on right: 5
-    param <ast> (51)
-        on left: 21
-        on right: 22
-    optionalParamsList <ast> (52)
-        on left: 22 23
-        on right: 22 24
-    functionDeclaration <ast> (53)
-        on left: 24
-        on right: 6
-    commandBlock <ast> (54)
-        on left: 25
-        on right: 24 35
-    commandList <ast> (55)
-        on left: 26
-        on right: 25
-    commandListTail <ast> (56)
-        on left: 27 28
-        on right: 26 27
-    command <ast> (57)
-        on left: 29 30 31 32 33 34 35 36
-        on right: 26 27 48 49 51
-    assignment <ast> (58)
-        on left: 37 38
-        on right: 29
-    readCommand <ast> (59)
-        on left: 39
-        on right: 30
-    optionalIndex <ast> (60)
-        on left: 40 41
-        on right: 39
-    printCommand <ast> (61)
-        on left: 42
-        on right: 31
-    printParam <ast> (62)
-        on left: 43 44
-        on right: 45
-    printParamList <ast> (63)
-        on left: 45 46
-        on right: 42 45
-    returnCommand <ast> (64)
-        on left: 47
-        on right: 32
-    ifCommand <ast> (65)
-        on left: 48
-        on right: 33
-    optionalElse <ast> (66)
-        on left: 49 50
-        on right: 48
-    whileCommand <ast> (67)
-        on left: 51
-        on right: 34
-    expression <ast> (68)
-        on left: 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69
-        on right: 37 38 40 44 47 48 51 53 55 56 57 58 59 60 61 62 63 64 65 66 67 68 71
-    functionCall <ast> (69)
-        on left: 70
-        on right: 69
-    functionParamsList <ast> (70)
-        on left: 71 72
-        on right: 70 71
+$accept (39)
+    on left: 0
+program (40)
+    on left: 1, on right: 0
+declarationList (41)
+    on left: 2 3, on right: 1 2
+declaration (42)
+    on left: 4 5 6, on right: 2
+type (43)
+    on left: 7 8 9, on right: 19 20 21 24
+literal (44)
+    on left: 10 11 12, on right: 13 14 16 54
+literalList (45)
+    on left: 13, on right: 17
+literalListTail (46)
+    on left: 14 15, on right: 13 14
+initialization (47)
+    on left: 16, on right: 19
+optionalInitialization (48)
+    on left: 17 18, on right: 20
+globalVariableDeclaration (49)
+    on left: 19, on right: 4
+globalVectorDeclaration (50)
+    on left: 20, on right: 5
+param (51)
+    on left: 21, on right: 22
+optionalParamsList (52)
+    on left: 22 23, on right: 22 24
+functionDeclaration (53)
+    on left: 24, on right: 6
+commandBlock (54)
+    on left: 25, on right: 24 35
+commandList (55)
+    on left: 26, on right: 25
+commandListTail (56)
+    on left: 27 28, on right: 26 27
+command (57)
+    on left: 29 30 31 32 33 34 35 36, on right: 26 27 48 49 51
+assignment (58)
+    on left: 37 38, on right: 29
+readCommand (59)
+    on left: 39, on right: 30
+optionalIndex (60)
+    on left: 40 41, on right: 39
+printCommand (61)
+    on left: 42, on right: 31
+printParam (62)
+    on left: 43 44, on right: 45
+printParamList (63)
+    on left: 45 46, on right: 42 45
+returnCommand (64)
+    on left: 47, on right: 32
+ifCommand (65)
+    on left: 48, on right: 33
+optionalElse (66)
+    on left: 49 50, on right: 48
+whileCommand (67)
+    on left: 51, on right: 34
+expression (68)
+    on left: 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69
+   , on right: 37 38 40 44 47 48 51 53 55 56 57 58 59 60 61 62 63 64
+    65 66 67 68 71
+functionCall (69)
+    on left: 70, on right: 69
+functionParamsList (70)
+    on left: 71 72, on right: 70 71
 
 
-State 0
+state 0
 
     0 $accept: . program $end
 
@@ -275,42 +246,42 @@ State 0
     functionDeclaration        go to state 10
 
 
-State 1
+state 1
 
     8 type: KW_CHAR .
 
     $default  reduce using rule 8 (type)
 
 
-State 2
+state 2
 
     9 type: KW_INT .
 
     $default  reduce using rule 9 (type)
 
 
-State 3
+state 3
 
     7 type: KW_FLOAT .
 
     $default  reduce using rule 7 (type)
 
 
-State 4
+state 4
 
     0 $accept: program . $end
 
     $end  shift, and go to state 11
 
 
-State 5
+state 5
 
     1 program: declarationList .
 
     $default  reduce using rule 1 (program)
 
 
-State 6
+state 6
 
     2 declarationList: declaration . declarationList
 
@@ -328,7 +299,7 @@ State 6
     functionDeclaration        go to state 10
 
 
-State 7
+state 7
 
    19 globalVariableDeclaration: type . TK_IDENTIFIER initialization ';'
    20 globalVectorDeclaration: type . TK_IDENTIFIER '[' LIT_INTEGER ']' optionalInitialization ';'
@@ -337,42 +308,42 @@ State 7
     TK_IDENTIFIER  shift, and go to state 13
 
 
-State 8
+state 8
 
     4 declaration: globalVariableDeclaration .
 
     $default  reduce using rule 4 (declaration)
 
 
-State 9
+state 9
 
     5 declaration: globalVectorDeclaration .
 
     $default  reduce using rule 5 (declaration)
 
 
-State 10
+state 10
 
     6 declaration: functionDeclaration .
 
     $default  reduce using rule 6 (declaration)
 
 
-State 11
+state 11
 
     0 $accept: program $end .
 
     $default  accept
 
 
-State 12
+state 12
 
     2 declarationList: declaration declarationList .
 
     $default  reduce using rule 2 (declarationList)
 
 
-State 13
+state 13
 
    19 globalVariableDeclaration: type TK_IDENTIFIER . initialization ';'
    20 globalVectorDeclaration: type TK_IDENTIFIER . '[' LIT_INTEGER ']' optionalInitialization ';'
@@ -384,7 +355,7 @@ State 13
     initialization  go to state 16
 
 
-State 14
+state 14
 
    16 initialization: '(' . literal ')'
    24 functionDeclaration: type TK_IDENTIFIER '(' . optionalParamsList ')' commandBlock
@@ -404,56 +375,56 @@ State 14
     optionalParamsList  go to state 23
 
 
-State 15
+state 15
 
    20 globalVectorDeclaration: type TK_IDENTIFIER '[' . LIT_INTEGER ']' optionalInitialization ';'
 
     LIT_INTEGER  shift, and go to state 24
 
 
-State 16
+state 16
 
    19 globalVariableDeclaration: type TK_IDENTIFIER initialization . ';'
 
     ';'  shift, and go to state 25
 
 
-State 17
+state 17
 
    12 literal: LIT_INTEGER .
 
     $default  reduce using rule 12 (literal)
 
 
-State 18
+state 18
 
    11 literal: LIT_FLOAT .
 
     $default  reduce using rule 11 (literal)
 
 
-State 19
+state 19
 
    10 literal: LIT_CHAR .
 
     $default  reduce using rule 10 (literal)
 
 
-State 20
+state 20
 
    21 param: type . TK_IDENTIFIER
 
     TK_IDENTIFIER  shift, and go to state 26
 
 
-State 21
+state 21
 
    16 initialization: '(' literal . ')'
 
     ')'  shift, and go to state 27
 
 
-State 22
+state 22
 
    22 optionalParamsList: param . optionalParamsList
 
@@ -468,49 +439,49 @@ State 22
     optionalParamsList  go to state 28
 
 
-State 23
+state 23
 
    24 functionDeclaration: type TK_IDENTIFIER '(' optionalParamsList . ')' commandBlock
 
     ')'  shift, and go to state 29
 
 
-State 24
+state 24
 
    20 globalVectorDeclaration: type TK_IDENTIFIER '[' LIT_INTEGER . ']' optionalInitialization ';'
 
     ']'  shift, and go to state 30
 
 
-State 25
+state 25
 
    19 globalVariableDeclaration: type TK_IDENTIFIER initialization ';' .
 
     $default  reduce using rule 19 (globalVariableDeclaration)
 
 
-State 26
+state 26
 
    21 param: type TK_IDENTIFIER .
 
     $default  reduce using rule 21 (param)
 
 
-State 27
+state 27
 
    16 initialization: '(' literal ')' .
 
     $default  reduce using rule 16 (initialization)
 
 
-State 28
+state 28
 
    22 optionalParamsList: param optionalParamsList .
 
     $default  reduce using rule 22 (optionalParamsList)
 
 
-State 29
+state 29
 
    24 functionDeclaration: type TK_IDENTIFIER '(' optionalParamsList ')' . commandBlock
 
@@ -519,7 +490,7 @@ State 29
     commandBlock  go to state 32
 
 
-State 30
+state 30
 
    20 globalVectorDeclaration: type TK_IDENTIFIER '[' LIT_INTEGER ']' . optionalInitialization ';'
 
@@ -534,7 +505,7 @@ State 30
     optionalInitialization  go to state 35
 
 
-State 31
+state 31
 
    25 commandBlock: '{' . commandList '}'
 
@@ -559,14 +530,14 @@ State 31
     whileCommand   go to state 50
 
 
-State 32
+state 32
 
    24 functionDeclaration: type TK_IDENTIFIER '(' optionalParamsList ')' commandBlock .
 
     $default  reduce using rule 24 (functionDeclaration)
 
 
-State 33
+state 33
 
    13 literalList: literal . literalListTail
 
@@ -580,42 +551,42 @@ State 33
     literalListTail  go to state 52
 
 
-State 34
+state 34
 
    17 optionalInitialization: literalList .
 
     $default  reduce using rule 17 (optionalInitialization)
 
 
-State 35
+state 35
 
    20 globalVectorDeclaration: type TK_IDENTIFIER '[' LIT_INTEGER ']' optionalInitialization . ';'
 
     ';'  shift, and go to state 53
 
 
-State 36
+state 36
 
    48 ifCommand: KW_IF . '(' expression ')' command optionalElse
 
     '('  shift, and go to state 54
 
 
-State 37
+state 37
 
    51 whileCommand: KW_WHILE . '(' expression ')' command
 
     '('  shift, and go to state 55
 
 
-State 38
+state 38
 
    39 readCommand: KW_READ . TK_IDENTIFIER optionalIndex
 
     TK_IDENTIFIER  shift, and go to state 56
 
 
-State 39
+state 39
 
    42 printCommand: KW_PRINT . printParamList
 
@@ -636,7 +607,7 @@ State 39
     functionCall    go to state 65
 
 
-State 40
+state 40
 
    47 returnCommand: KW_RETURN . expression
 
@@ -652,7 +623,7 @@ State 40
     functionCall  go to state 65
 
 
-State 41
+state 41
 
    37 assignment: TK_IDENTIFIER . ASSIGNMENT expression
    38           | TK_IDENTIFIER . '[' expression ']' ASSIGNMENT expression
@@ -661,21 +632,21 @@ State 41
     '['         shift, and go to state 68
 
 
-State 42
+state 42
 
    35 command: commandBlock .
 
     $default  reduce using rule 35 (command)
 
 
-State 43
+state 43
 
    25 commandBlock: '{' commandList . '}'
 
     '}'  shift, and go to state 69
 
 
-State 44
+state 44
 
    26 commandList: command . commandListTail
 
@@ -686,49 +657,49 @@ State 44
     commandListTail  go to state 71
 
 
-State 45
+state 45
 
    29 command: assignment .
 
     $default  reduce using rule 29 (command)
 
 
-State 46
+state 46
 
    30 command: readCommand .
 
     $default  reduce using rule 30 (command)
 
 
-State 47
+state 47
 
    31 command: printCommand .
 
     $default  reduce using rule 31 (command)
 
 
-State 48
+state 48
 
    32 command: returnCommand .
 
     $default  reduce using rule 32 (command)
 
 
-State 49
+state 49
 
    33 command: ifCommand .
 
     $default  reduce using rule 33 (command)
 
 
-State 50
+state 50
 
    34 command: whileCommand .
 
     $default  reduce using rule 34 (command)
 
 
-State 51
+state 51
 
    14 literalListTail: literal . literalListTail
 
@@ -742,21 +713,21 @@ State 51
     literalListTail  go to state 72
 
 
-State 52
+state 52
 
    13 literalList: literal literalListTail .
 
     $default  reduce using rule 13 (literalList)
 
 
-State 53
+state 53
 
    20 globalVectorDeclaration: type TK_IDENTIFIER '[' LIT_INTEGER ']' optionalInitialization ';' .
 
     $default  reduce using rule 20 (globalVectorDeclaration)
 
 
-State 54
+state 54
 
    48 ifCommand: KW_IF '(' . expression ')' command optionalElse
 
@@ -772,7 +743,7 @@ State 54
     functionCall  go to state 65
 
 
-State 55
+state 55
 
    51 whileCommand: KW_WHILE '(' . expression ')' command
 
@@ -788,7 +759,7 @@ State 55
     functionCall  go to state 65
 
 
-State 56
+state 56
 
    39 readCommand: KW_READ TK_IDENTIFIER . optionalIndex
 
@@ -799,7 +770,7 @@ State 56
     optionalIndex  go to state 76
 
 
-State 57
+state 57
 
    52 expression: TK_IDENTIFIER .
    53           | TK_IDENTIFIER . '[' expression ']'
@@ -812,14 +783,14 @@ State 57
     $default  reduce using rule 52 (expression)
 
 
-State 58
+state 58
 
    43 printParam: LIT_STRING .
 
     $default  reduce using rule 43 (printParam)
 
 
-State 59
+state 59
 
    67 expression: '~' . expression
 
@@ -835,7 +806,7 @@ State 59
     functionCall  go to state 65
 
 
-State 60
+state 60
 
    68 expression: '(' . expression ')'
 
@@ -851,14 +822,14 @@ State 60
     functionCall  go to state 65
 
 
-State 61
+state 61
 
    54 expression: literal .
 
     $default  reduce using rule 54 (expression)
 
 
-State 62
+state 62
 
    45 printParamList: printParam . printParamList
 
@@ -879,14 +850,14 @@ State 62
     functionCall    go to state 65
 
 
-State 63
+state 63
 
    42 printCommand: KW_PRINT printParamList .
 
     $default  reduce using rule 42 (printCommand)
 
 
-State 64
+state 64
 
    44 printParam: expression .
    55 expression: expression . '+' expression
@@ -918,14 +889,14 @@ State 64
     $default  reduce using rule 44 (printParam)
 
 
-State 65
+state 65
 
    69 expression: functionCall .
 
     $default  reduce using rule 69 (expression)
 
 
-State 66
+state 66
 
    47 returnCommand: KW_RETURN expression .
    55 expression: expression . '+' expression
@@ -957,7 +928,7 @@ State 66
     $default  reduce using rule 47 (returnCommand)
 
 
-State 67
+state 67
 
    37 assignment: TK_IDENTIFIER ASSIGNMENT . expression
 
@@ -973,7 +944,7 @@ State 67
     functionCall  go to state 65
 
 
-State 68
+state 68
 
    38 assignment: TK_IDENTIFIER '[' . expression ']' ASSIGNMENT expression
 
@@ -989,14 +960,14 @@ State 68
     functionCall  go to state 65
 
 
-State 69
+state 69
 
    25 commandBlock: '{' commandList '}' .
 
     $default  reduce using rule 25 (commandBlock)
 
 
-State 70
+state 70
 
    27 commandListTail: ';' . command commandListTail
 
@@ -1020,21 +991,21 @@ State 70
     whileCommand   go to state 50
 
 
-State 71
+state 71
 
    26 commandList: command commandListTail .
 
     $default  reduce using rule 26 (commandList)
 
 
-State 72
+state 72
 
    14 literalListTail: literal literalListTail .
 
     $default  reduce using rule 14 (literalListTail)
 
 
-State 73
+state 73
 
    48 ifCommand: KW_IF '(' expression . ')' command optionalElse
    55 expression: expression . '+' expression
@@ -1065,7 +1036,7 @@ State 73
     ')'           shift, and go to state 97
 
 
-State 74
+state 74
 
    51 whileCommand: KW_WHILE '(' expression . ')' command
    55 expression: expression . '+' expression
@@ -1096,7 +1067,7 @@ State 74
     ')'           shift, and go to state 98
 
 
-State 75
+state 75
 
    40 optionalIndex: '[' . expression ']'
 
@@ -1112,14 +1083,14 @@ State 75
     functionCall  go to state 65
 
 
-State 76
+state 76
 
    39 readCommand: KW_READ TK_IDENTIFIER optionalIndex .
 
     $default  reduce using rule 39 (readCommand)
 
 
-State 77
+state 77
 
    70 functionCall: TK_IDENTIFIER '(' . functionParamsList ')'
 
@@ -1138,7 +1109,7 @@ State 77
     functionParamsList  go to state 101
 
 
-State 78
+state 78
 
    53 expression: TK_IDENTIFIER '[' . expression ']'
 
@@ -1154,7 +1125,7 @@ State 78
     functionCall  go to state 65
 
 
-State 79
+state 79
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1186,7 +1157,7 @@ State 79
     $default  reduce using rule 67 (expression)
 
 
-State 80
+state 80
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1217,14 +1188,14 @@ State 80
     ')'           shift, and go to state 103
 
 
-State 81
+state 81
 
    45 printParamList: printParam printParamList .
 
     $default  reduce using rule 45 (printParamList)
 
 
-State 82
+state 82
 
    61 expression: expression OPERATOR_LE . expression
 
@@ -1240,7 +1211,7 @@ State 82
     functionCall  go to state 65
 
 
-State 83
+state 83
 
    62 expression: expression OPERATOR_GE . expression
 
@@ -1256,7 +1227,7 @@ State 83
     functionCall  go to state 65
 
 
-State 84
+state 84
 
    63 expression: expression OPERATOR_EQ . expression
 
@@ -1272,7 +1243,7 @@ State 84
     functionCall  go to state 65
 
 
-State 85
+state 85
 
    64 expression: expression OPERATOR_DIF . expression
 
@@ -1288,7 +1259,7 @@ State 85
     functionCall  go to state 65
 
 
-State 86
+state 86
 
    65 expression: expression '&' . expression
 
@@ -1304,7 +1275,7 @@ State 86
     functionCall  go to state 65
 
 
-State 87
+state 87
 
    66 expression: expression '|' . expression
 
@@ -1320,7 +1291,7 @@ State 87
     functionCall  go to state 65
 
 
-State 88
+state 88
 
    60 expression: expression '<' . expression
 
@@ -1336,7 +1307,7 @@ State 88
     functionCall  go to state 65
 
 
-State 89
+state 89
 
    59 expression: expression '>' . expression
 
@@ -1352,7 +1323,7 @@ State 89
     functionCall  go to state 65
 
 
-State 90
+state 90
 
    55 expression: expression '+' . expression
 
@@ -1368,7 +1339,7 @@ State 90
     functionCall  go to state 65
 
 
-State 91
+state 91
 
    56 expression: expression '-' . expression
 
@@ -1384,7 +1355,7 @@ State 91
     functionCall  go to state 65
 
 
-State 92
+state 92
 
    57 expression: expression '.' . expression
 
@@ -1400,7 +1371,7 @@ State 92
     functionCall  go to state 65
 
 
-State 93
+state 93
 
    58 expression: expression '/' . expression
 
@@ -1416,7 +1387,7 @@ State 93
     functionCall  go to state 65
 
 
-State 94
+state 94
 
    37 assignment: TK_IDENTIFIER ASSIGNMENT expression .
    55 expression: expression . '+' expression
@@ -1448,7 +1419,7 @@ State 94
     $default  reduce using rule 37 (assignment)
 
 
-State 95
+state 95
 
    38 assignment: TK_IDENTIFIER '[' expression . ']' ASSIGNMENT expression
    55 expression: expression . '+' expression
@@ -1479,7 +1450,7 @@ State 95
     ']'           shift, and go to state 116
 
 
-State 96
+state 96
 
    27 commandListTail: ';' command . commandListTail
 
@@ -1490,7 +1461,7 @@ State 96
     commandListTail  go to state 117
 
 
-State 97
+state 97
 
    48 ifCommand: KW_IF '(' expression ')' . command optionalElse
 
@@ -1514,7 +1485,7 @@ State 97
     whileCommand   go to state 50
 
 
-State 98
+state 98
 
    51 whileCommand: KW_WHILE '(' expression ')' . command
 
@@ -1538,7 +1509,7 @@ State 98
     whileCommand   go to state 50
 
 
-State 99
+state 99
 
    40 optionalIndex: '[' expression . ']'
    55 expression: expression . '+' expression
@@ -1569,7 +1540,7 @@ State 99
     ']'           shift, and go to state 120
 
 
-State 100
+state 100
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1612,14 +1583,14 @@ State 100
     functionParamsList  go to state 121
 
 
-State 101
+state 101
 
    70 functionCall: TK_IDENTIFIER '(' functionParamsList . ')'
 
     ')'  shift, and go to state 122
 
 
-State 102
+state 102
 
    53 expression: TK_IDENTIFIER '[' expression . ']'
    55           | expression . '+' expression
@@ -1650,14 +1621,14 @@ State 102
     ']'           shift, and go to state 123
 
 
-State 103
+state 103
 
    68 expression: '(' expression ')' .
 
     $default  reduce using rule 68 (expression)
 
 
-State 104
+state 104
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1681,7 +1652,7 @@ State 104
     $default  reduce using rule 61 (expression)
 
 
-State 105
+state 105
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1705,7 +1676,7 @@ State 105
     $default  reduce using rule 62 (expression)
 
 
-State 106
+state 106
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1729,7 +1700,7 @@ State 106
     $default  reduce using rule 63 (expression)
 
 
-State 107
+state 107
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1753,7 +1724,7 @@ State 107
     $default  reduce using rule 64 (expression)
 
 
-State 108
+state 108
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1783,7 +1754,7 @@ State 108
     $default  reduce using rule 65 (expression)
 
 
-State 109
+state 109
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1813,7 +1784,7 @@ State 109
     $default  reduce using rule 66 (expression)
 
 
-State 110
+state 110
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1837,7 +1808,7 @@ State 110
     $default  reduce using rule 60 (expression)
 
 
-State 111
+state 111
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1861,7 +1832,7 @@ State 111
     $default  reduce using rule 59 (expression)
 
 
-State 112
+state 112
 
    55 expression: expression . '+' expression
    55           | expression '+' expression .
@@ -1883,7 +1854,7 @@ State 112
     $default  reduce using rule 55 (expression)
 
 
-State 113
+state 113
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1905,7 +1876,7 @@ State 113
     $default  reduce using rule 56 (expression)
 
 
-State 114
+state 114
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1924,7 +1895,7 @@ State 114
     $default  reduce using rule 57 (expression)
 
 
-State 115
+state 115
 
    55 expression: expression . '+' expression
    56           | expression . '-' expression
@@ -1943,21 +1914,21 @@ State 115
     $default  reduce using rule 58 (expression)
 
 
-State 116
+state 116
 
    38 assignment: TK_IDENTIFIER '[' expression ']' . ASSIGNMENT expression
 
     ASSIGNMENT  shift, and go to state 124
 
 
-State 117
+state 117
 
    27 commandListTail: ';' command commandListTail .
 
     $default  reduce using rule 27 (commandListTail)
 
 
-State 118
+state 118
 
    48 ifCommand: KW_IF '(' expression ')' command . optionalElse
 
@@ -1969,42 +1940,42 @@ State 118
     optionalElse  go to state 126
 
 
-State 119
+state 119
 
    51 whileCommand: KW_WHILE '(' expression ')' command .
 
     $default  reduce using rule 51 (whileCommand)
 
 
-State 120
+state 120
 
    40 optionalIndex: '[' expression ']' .
 
     $default  reduce using rule 40 (optionalIndex)
 
 
-State 121
+state 121
 
    71 functionParamsList: expression functionParamsList .
 
     $default  reduce using rule 71 (functionParamsList)
 
 
-State 122
+state 122
 
    70 functionCall: TK_IDENTIFIER '(' functionParamsList ')' .
 
     $default  reduce using rule 70 (functionCall)
 
 
-State 123
+state 123
 
    53 expression: TK_IDENTIFIER '[' expression ']' .
 
     $default  reduce using rule 53 (expression)
 
 
-State 124
+state 124
 
    38 assignment: TK_IDENTIFIER '[' expression ']' ASSIGNMENT . expression
 
@@ -2020,7 +1991,7 @@ State 124
     functionCall  go to state 65
 
 
-State 125
+state 125
 
    49 optionalElse: KW_ELSE . command
 
@@ -2044,14 +2015,14 @@ State 125
     whileCommand   go to state 50
 
 
-State 126
+state 126
 
    48 ifCommand: KW_IF '(' expression ')' command optionalElse .
 
     $default  reduce using rule 48 (ifCommand)
 
 
-State 127
+state 127
 
    38 assignment: TK_IDENTIFIER '[' expression ']' ASSIGNMENT expression .
    55 expression: expression . '+' expression
@@ -2083,7 +2054,7 @@ State 127
     $default  reduce using rule 38 (assignment)
 
 
-State 128
+state 128
 
    49 optionalElse: KW_ELSE command .
 
