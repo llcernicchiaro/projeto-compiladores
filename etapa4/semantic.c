@@ -86,21 +86,22 @@ void checkAndSetDeclarations(AST *node)
     }
 }
 
-void checkGlobalVectorDeclaration(AST *node) {
+void checkGlobalVectorDeclaration(AST *node)
+{
 
     int i;
     int type = 0;
 
-    if(node == 0) 
+    if (node == 0)
         return;
 
-    switch (node->type) 
+    switch (node->type)
     {
-        case AST_GLOBAL_VECTOR_DECLARATION:
-            checkVectorOptionalInitialization(node);
-            break;
-        default:
-            break;
+    case AST_GLOBAL_VECTOR_DECLARATION:
+        checkVectorOptionalInitialization(node);
+        break;
+    default:
+        break;
     }
 
     for (i = 0; i < MAXSONS; ++i)
@@ -109,64 +110,66 @@ void checkGlobalVectorDeclaration(AST *node) {
     }
 }
 
-void checkVectorOptionalInitialization(AST *node) {
-    
-    if(node->son[0] == 0 || node->son[1] == 0 || node->son[2] == 0 || node->symbol == 0) 
+void checkVectorOptionalInitialization(AST *node)
+{
+
+    if (node->son[0] == 0 || node->son[1] == 0 || node->son[2] == 0 || node->symbol == 0)
         return;
 
     int vectorType = node->son[0]->type;
-    char* vectorName = node->symbol->text;
+    char *vectorName = node->symbol->text;
     int vectorSize = atoi(node->son[1]->symbol->text);
-    AST* currentVectorInitialization = node->son[2];
+    AST *currentVectorInitialization = node->son[2];
 
     int vectorCount = 0;
 
-    while(currentVectorInitialization != 0)
+    while (currentVectorInitialization != 0)
     {
-        switch (currentVectorInitialization->type) 
+        switch (currentVectorInitialization->type)
         {
-            case AST_OPTIONAL_INITIALIZATION:
-                currentVectorInitialization = currentVectorInitialization->son[0];
-                break;
-            case AST_LITERAL_LIST:
-                if(currentVectorInitialization->son[0]) 
+        case AST_OPTIONAL_INITIALIZATION:
+            currentVectorInitialization = currentVectorInitialization->son[0];
+            break;
+        case AST_LITERAL_LIST:
+            if (currentVectorInitialization->son[0])
+            {
+                if (!checkVectorInitializationCompatibleTypes(vectorType, currentVectorInitialization->son[0]->symbol))
                 {
-                    if(!checkVectorInitializationCompatiableTypes(vectorType, currentVectorInitialization->son[0]->symbol))
-                    {
-                        fprintf(stderr, "Semantic ERROR: vector '%s' initialization type missmatch\n", vectorName);
-                        ++ semanticErrors;
-                    }
-
-                    ++ vectorCount;
+                    fprintf(stderr, "Semantic ERROR: vector '%s' initialization type missmatch\n", vectorName);
+                    ++semanticErrors;
                 }
-                currentVectorInitialization = currentVectorInitialization->son[1];
-                break;
-            case AST_LITERAL_LIST_TAIL:
-                if(currentVectorInitialization->son[0]) 
+
+                ++vectorCount;
+            }
+            currentVectorInitialization = currentVectorInitialization->son[1];
+            break;
+        case AST_LITERAL_LIST_TAIL:
+            if (currentVectorInitialization->son[0])
+            {
+                if (!checkVectorInitializationCompatibleTypes(vectorType, currentVectorInitialization->son[0]->symbol))
                 {
-                    if(!checkVectorInitializationCompatiableTypes(vectorType, currentVectorInitialization->son[0]->symbol))
-                    {
-                        fprintf(stderr, "Semantic ERROR: vector '%s' initialization type missmatch\n", vectorName);
-                        ++ semanticErrors;
-                    }
-
-                    ++ vectorCount;
+                    fprintf(stderr, "Semantic ERROR: vector '%s' initialization type missmatch\n", vectorName);
+                    ++semanticErrors;
                 }
-                currentVectorInitialization = currentVectorInitialization->son[1];
-                break;
-            default:
-                break;
+
+                ++vectorCount;
+            }
+            currentVectorInitialization = currentVectorInitialization->son[1];
+            break;
+        default:
+            break;
         }
     }
 
-    if(vectorCount > vectorSize) 
+    if (vectorCount > vectorSize)
     {
         fprintf(stderr, "Semantic ERROR: vector '%s' initialization size missmatch - too many arguments \n", vectorName);
-        ++ semanticErrors;
-    } else if (vectorCount < vectorSize) 
+        ++semanticErrors;
+    }
+    else if (vectorCount < vectorSize)
     {
         fprintf(stderr, "Semantic ERROR: vector '%s' initialization size missmatch - too fewer arguments \n", vectorName);
-        ++ semanticErrors;
+        ++semanticErrors;
     }
 }
 
@@ -182,44 +185,43 @@ void checkOperands(AST *node)
     if (node == 0)
         return;
 
+    for (i = 0; i < MAXSONS; i++)
+        checkOperands(node->son[i]);
+
     switch (node->type)
     {
     case AST_ADD:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_SUB:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_MUL:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_DIV:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_GREATER_THAN:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_LESS_THAN:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_LE:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_GE:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_EQ:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_DIF:
-        checkBothOperators(node);
+        checkBothOperands(node);
         break;
     case AST_BRACKETS_EXPR:
-        if (!isNumber(node->son[0]))
-        {
-            fprintf(stderr, "Semantic ERROR: invalid expression inside brackets\n");
-            ++semanticErrors;
-        }
+        checkBothOperands(node->son[0]);
         break;
     case AST_ARRAY_ACCESS:
         if (!isNumber(node->son[0]))
@@ -238,9 +240,6 @@ void checkOperands(AST *node)
     default:
         break;
     }
-
-    for (i = 0; i < MAXSONS; i++)
-        checkOperands(node->son[i]);
 }
 
 void checkArgumentsSize(AST *argsDeclared, AST *argsCall)
@@ -280,7 +279,7 @@ void checkArgumentsSize(AST *argsDeclared, AST *argsCall)
     }
 }
 
-bool checkVectorInitializationCompatiableTypes(int type, HASH_NODE *symbol) 
+bool checkVectorInitializationCompatibleTypes(int type, HASH_NODE *symbol)
 {
     bool isCharOrIntLit = symbol->type == SYMBOL_LITINT || symbol->type == SYMBOL_LITCHAR;
 
@@ -387,25 +386,96 @@ void setDataTypeWith(AST *node)
     }
 }
 
-void checkBothOperators(AST *node)
+void checkBothOperands(AST *node)
 {
-
     if (node == 0)
         return;
 
-    if (node->son[0])
-        if (!isNumber(node->son[0]))
-        {
-            fprintf(stderr, "Semantic ERROR: invalid left operand\n");
-            ++semanticErrors;
-        }
+    if (isFloat(node->son[0]) && isFloat(node->son[1]))
+    {
+    }
+    else if (isNumber(node->son[0]) && isNumber(node->son[1]))
+    {
+    }
+    else
+    {
+        fprintf(stderr, "Semantic ERROR: operands are incompatible\n");
+        ++semanticErrors;
+    }
 
-    if (node->son[1])
-        if (!isNumber(node->son[1]))
-        {
-            fprintf(stderr, "Semantic ERROR: invalid right operand\n");
-            ++semanticErrors;
-        }
+    // int isLeftOperandFloat = 0;
+    // int isRightOperandFloat = 0;
+
+    // if (node->son[0] && node->son[0]->symbol != 0)
+    // {
+    //     isLeftOperandFloat = isFloat(node->son[0]);
+    // }
+
+    // if (node->son[1] && node->son[1]->symbol != 0)
+    // {
+    //     isRightOperandFloat = isFloat(node->son[1]);
+    // }
+
+    // if (isLeftOperandFloat || isRightOperandFloat)
+    // {
+    //     if ((isLeftOperandFloat && node->son[1]->symbol == 0) || (isRightOperandFloat && node->son[0]->symbol == 0))
+    //         return;
+
+    //     else if ((isLeftOperandFloat && !isRightOperandFloat) || (!isLeftOperandFloat && isRightOperandFloat))
+    //     {
+    //         fprintf(stderr, "Semantic ERROR: operands are incompatible\n");
+    //         ++semanticErrors;
+    //     }
+    // }
+
+    // if (node->son[0])
+    //     if (!isNumber(node->son[0]))
+    //     {
+    //         fprintf(stderr, "Semantic ERROR: invalid left operand\n");
+    //         ++semanticErrors;
+    //     }
+
+    // if (node->son[1])
+    //     if (!isNumber(node->son[1]))
+    //     {
+    //         fprintf(stderr, "Semantic ERROR: invalid right operand\n");
+    //         ++semanticErrors;
+    //     }
+}
+
+int isFloat(AST *son)
+{
+    bool isLitFloat = false;
+    bool isTypeFloat = false;
+    bool isValidVar = false;
+    bool isValidParam = false;
+
+    if (son->symbol != 0)
+    {
+        isLitFloat = son->symbol->type == SYMBOL_LITFLOAT;
+        isTypeFloat = son->symbol->dataType == DATA_TYPE_FLOAT;
+        isValidVar = son->symbol->type == SYMBOL_VARIABLE && isTypeFloat;
+        isValidParam = son->symbol->type == SYMBOL_PARAM && isTypeFloat;
+    }
+
+    if ((son->type == AST_ADD ||
+         son->type == AST_SUB ||
+         son->type == AST_MUL ||
+         son->type == AST_DIV ||
+         son->type == AST_GREATER_THAN ||
+         son->type == AST_LESS_THAN ||
+         son->type == AST_LE ||
+         son->type == AST_GE ||
+         son->type == AST_EQ ||
+         son->type == AST_DIF ||
+         son->type == AST_BRACKETS_EXPR ||
+         son->type == AST_ARRAY_ACCESS ||
+         son->type == AST_NOT ||
+         (son->type == AST_SYMBOL && (isLitFloat || isValidVar || isValidParam)) ||
+         (son->type == AST_FUNC_CALL && isTypeFloat)))
+        return 1;
+    else
+        return 0;
 }
 
 int isNumber(AST *son)
@@ -414,6 +484,7 @@ int isNumber(AST *son)
     bool isTypeIntOrChar = false;
     bool isValidVar = false;
     bool isValidParam = false;
+
     if (son->symbol != 0)
     {
         isLitIntOrChar = son->symbol->type == SYMBOL_LITINT || son->symbol->type == SYMBOL_LITCHAR;

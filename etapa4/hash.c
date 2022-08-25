@@ -60,6 +60,7 @@ HASH_NODE *hashInsert(char *text, int type)
     strcpy(newNode->text, text);
     newNode->next = table[address];
     newNode->arguments = NULL;
+    newNode->dataType = 0;
     table[address] = newNode;
 
     return newNode;
@@ -80,22 +81,23 @@ void hashPrint()
 }
 
 int hashCheckUndeclared()
-{	 
+{
     HASH_NODE *node;
-	int undeclared = 0;
+    int undeclared = 0;
 
-	int i;
-    
-	for (i = 0; i < HASH_SIZE; i++){
-			for( node = table[i]; node; node = node->next)
+    int i;
+
+    for (i = 0; i < HASH_SIZE; i++)
+    {
+        for (node = table[i]; node; node = node->next)
+        {
+            if (node->type == SYMBOL_IDENTIFIER)
             {
-				if (node->type == SYMBOL_IDENTIFIER) 
-                {
-					fprintf(stderr, "Semantic ERROR: Identifier '%s' wasn't declared.\n", node->text);
-					++ undeclared;
-				}
-			}
-	}
+                fprintf(stderr, "Semantic ERROR: Identifier '%s' wasn't declared.\n", node->text);
+                ++undeclared;
+            }
+        }
+    }
 
-	return undeclared;
+    return undeclared;
 }
