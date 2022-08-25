@@ -19,7 +19,7 @@ bool checkCompatibleTypes(int type, HASH_NODE *symbol);
 void checkArgumentsTypes(AST *argsDeclared, AST *functionCall);
 void checkArgumentsSize(AST *argsDeclared, AST *functionCall);
 void setDataTypeWith(AST *node);
-void checkBothOperators(AST *node);
+void checkBothOperands(AST *node);
 int isNumber(AST *son);
 void checkGlobalVectorDeclaration(AST *node);
 void checkVectorOptionalInitialization(AST *node);
@@ -27,5 +27,7 @@ bool checkVectorInitializationCompatiableTypes(int type, HASH_NODE *symbol);
 void checkFunctionsReturnType(AST *node);
 void searchFunctionReturnFor(AST *node);
 void matchReturnTypeWithFunctionType(int functionType, AST* returnNode);
+bool checkVectorInitializationCompatibleTypes(int type, HASH_NODE *symbol);
+int isFloat(AST *son);
 
 #endif
