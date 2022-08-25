@@ -70,6 +70,7 @@ program: declarationList  { $$ = $1;
                             checkOperands($1);
                             checkParameters($1);
                             checkGlobalVectorDeclaration($1);
+                            checkFunctionsReturnType($1);
                           }
   ;
 

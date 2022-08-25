@@ -24,5 +24,8 @@ int isNumber(AST *son);
 void checkGlobalVectorDeclaration(AST *node);
 void checkVectorOptionalInitialization(AST *node);
 bool checkVectorInitializationCompatiableTypes(int type, HASH_NODE *symbol);
+void checkFunctionsReturnType(AST *node);
+void searchFunctionReturnFor(AST *node);
+void matchReturnTypeWithFunctionType(int functionType, AST* returnNode);
 
 #endif

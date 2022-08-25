@@ -3,7 +3,7 @@ char d (100);
 int a ('A');
 int a ('A');
 int i (1);
-int v[10] 0 0 0 0 0 0 0 0 0 0 0;
+int v[10] 0 0 0 0 0 0 0 0 0 0;
 float f (2,5);
 int main() 
 {

@@ -441,3 +441,68 @@ int isNumber(AST *son)
     else
         return 0;
 }
+
+void checkFunctionsReturnType(AST *node) 
+{
+    int i;
+    int type = 0;
+
+    if(node == 0) 
+        return;
+
+    switch (node->type) 
+    {
+        case AST_FUNC_DEC:
+            searchFunctionReturnFor(node);
+            break;
+        default:
+            break;
+    }
+
+    for (i = 0; i < MAXSONS; ++i)
+    {
+        checkFunctionsReturnType(node->son[i]);
+    }
+}
+
+void searchFunctionReturnFor(AST *node) 
+{
+
+    if(node->son[0] == 0 || node->son[2] == 0 || node->symbol == 0)
+        return;
+
+    int functionType = node->son[0]->type;
+    char* functionName = node->symbol->text;
+
+    AST *cmdBlockPointer = node->son[2];
+
+    while(cmdBlockPointer)
+    {
+        switch (cmdBlockPointer->type)
+        {
+        case AST_CMD_BLOCK:
+            cmdBlockPointer = cmdBlockPointer->son[0];
+            break;
+        case AST_CMD_LIST:
+        case AST_CMD_LIST_TAIL:
+            if(cmdBlockPointer->son[0] != 0) {
+                if(cmdBlockPointer->son[0]->type == AST_RETURN) 
+                {
+                    matchReturnTypeWithFunctionType(functionType, cmdBlockPointer->son[0]);
+                }
+            }
+            cmdBlockPointer = cmdBlockPointer->son[1];
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void matchReturnTypeWithFunctionType(int functionType, AST* returnNode) {
+    
+    if(!returnNode)
+        return;
+
+    fprintf(stderr, "Return to tipo: %d", returnNode->son[0]->type);
+}
