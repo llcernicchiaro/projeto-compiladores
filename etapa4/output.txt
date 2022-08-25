@@ -1,6 +1,8 @@
+int v[10] 0 0 0 0 0 0 0 0 0 0;
 float a (2,5);
 float b (2,5);
 float incn(int i char c float f) 
 {
+v [2] <- 1 + 2;
 return 2 + (2,5 + incn(2 2 2,5))
 }

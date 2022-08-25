@@ -71,6 +71,7 @@ program: declarationList  { $$ = $1;
                             checkParameters($1);
                             checkGlobalVectorDeclaration($1);
                             checkFunctionsReturnType($1);
+                            checkAssignments($1);
                           }
   ;
 

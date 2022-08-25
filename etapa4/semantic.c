@@ -513,6 +513,81 @@ int isNumber(AST *son)
         return 0;
 }
 
+void checkAssignments(AST *node) 
+{
+    int i;
+    int type = 0;
+
+    if(node == 0) 
+        return;
+
+    switch (node->type) 
+    {
+        case AST_FUNC_DEC:
+            searchForAssignments(node);
+            break;
+        default:
+            break;
+    }
+
+    for (i = 0; i < MAXSONS; ++i)
+    {
+        checkAssignments(node->son[i]);
+    }
+}
+
+void searchForAssignments(AST *node) 
+{
+    if(node->son[0] == 0 || node->son[2] == 0 || node->symbol == 0)
+        return;
+
+    int functionType = node->son[0]->type;
+    char* functionName = node->symbol->text;
+
+    AST *cmdBlockPointer = node->son[2];
+
+    while(cmdBlockPointer)
+    {
+        switch (cmdBlockPointer->type)
+        {
+        case AST_CMD_BLOCK:
+            cmdBlockPointer = cmdBlockPointer->son[0];
+            break;
+        case AST_CMD_LIST:
+        case AST_CMD_LIST_TAIL:
+            if(cmdBlockPointer->son[0] != 0) {
+                if(cmdBlockPointer->son[0]->type == AST_ASSIGNMENT) 
+                {
+                    matchAssignmentTypeWithExpressionType(cmdBlockPointer->son[0]->symbol->dataType, cmdBlockPointer->son[0]);
+                }
+            }
+            cmdBlockPointer = cmdBlockPointer->son[1];
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void matchAssignmentTypeWithExpressionType(int assignmentDataType, AST* assignmentNode) {
+    
+    if(!assignmentNode)
+        return;
+
+    if(assignmentNode->symbol->type == SYMBOL_VECTOR) 
+    {
+        // Atribuicao com vetor (do lado esquerdo)
+        // Basicamente aqui o assignmentNode->[1] é a expression do lado direito do assignment e descobrindo o tipo dessa expression a gente consegue fazer uma comparacao com o assignmentDataType. 
+
+    } else if (assignmentNode->symbol->type == SYMBOL_VARIABLE) {
+
+        // Atribuicao com variavel (do lado esquerod)
+        // Basicamente aqui o assignmentNode->[0] é a expression do lado direito do assignment e descobrindo o tipo dessa expression a gente consegue fazer uma comparacao com o assignmentDataType. 
+    }
+} 
+
+// Abaixo sao as funcoes usadas para verificar o match do tipo do retorno de uma funcao com o tipo da funcao
+
 void checkFunctionsReturnType(AST *node) 
 {
     int i;
@@ -570,10 +645,14 @@ void searchFunctionReturnFor(AST *node)
     }
 }
 
+// TRABALHAR AQUI:
+
 void matchReturnTypeWithFunctionType(int functionType, AST* returnNode) {
     
     if(!returnNode)
         return;
 
-    fprintf(stderr, "Return to tipo: %d", returnNode->son[0]->type);
+    // Basicamente aqui o returnNode->[0] é a expression do return e descobrindo o tipo dessa expression a gente consegue fazer uma comparacao com o functionType. 
+
+    //fprintf(stderr, "Return to tipo: %d", returnNode->son[0]->type);
 }
