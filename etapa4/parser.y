@@ -67,11 +67,14 @@ program: declarationList  { $$ = $1;
                             generateSource($1, out);
                             checkAndSetDeclarations($1); 
                             checkUndeclared($1);
+                            checkUseOf($1);
                             checkOperands($1);
                             checkParameters($1);
                             checkGlobalVectorDeclaration($1);
                             checkFunctionsReturnType($1);
-                            checkAssignments($1);
+                            checkAssignmentsType($1);
+                            if (semanticErrors > 0)
+                              exit(4);
                           }
   ;
 

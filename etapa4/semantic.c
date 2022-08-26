@@ -11,9 +11,7 @@ void checkAndSetDeclarations(AST *node)
     int i;
 
     if (node == 0)
-    {
         return;
-    }
 
     switch (node->type)
     {
@@ -90,7 +88,6 @@ void checkGlobalVectorDeclaration(AST *node)
 {
 
     int i;
-    int type = 0;
 
     if (node == 0)
         return;
@@ -181,6 +178,7 @@ void checkUndeclared()
 void checkOperands(AST *node)
 {
     int i;
+    int result = 0;
 
     if (node == 0)
         return;
@@ -191,54 +189,60 @@ void checkOperands(AST *node)
     switch (node->type)
     {
     case AST_ADD:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_SUB:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_MUL:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_DIV:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_GREATER_THAN:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_LESS_THAN:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_LE:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_GE:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_EQ:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
     case AST_DIF:
-        checkBothOperands(node);
+        result = checkBothOperands(node);
         break;
-    case AST_BRACKETS_EXPR:
-        checkBothOperands(node->son[0]);
-        break;
-    case AST_ARRAY_ACCESS:
-        if (!isNumber(node->son[0]))
-        {
-            fprintf(stderr, "Semantic ERROR: invalid vector index\n");
-            ++semanticErrors;
-        }
-        break;
+    // case AST_ARRAY_ACCESS:
+    //     if (!isNumber(node->son[0]))
+    //     {
+    //         fprintf(stderr, "Semantic ERROR: invalid vector index\n");
+    //         ++semanticErrors;
+    //     }
+    //     result = 1;
+    //     break;
     case AST_NOT:
         if (!isNumber(node->son[0]))
         {
             fprintf(stderr, "Semantic ERROR: invalid operator on NOT\n");
             ++semanticErrors;
         }
+        result = 1;
         break;
     default:
+        result = 1;
         break;
+    }
+
+    if (result == 0)
+    {
+        fprintf(stderr, "Semantic ERROR: operands are incompatible\n");
+        ++semanticErrors;
     }
 }
 
@@ -356,8 +360,8 @@ void checkParameters(AST *node)
     switch (node->type)
     {
     case AST_FUNC_CALL:
-        checkArgumentsSize(node->symbol->arguments, node);
-        checkArgumentsTypes(node->symbol->arguments, node);
+        checkArgumentsSize((AST *)node->symbol->arguments, node);
+        checkArgumentsTypes((AST *)node->symbol->arguments, node);
         break;
     }
 
@@ -386,61 +390,27 @@ void setDataTypeWith(AST *node)
     }
 }
 
-void checkBothOperands(AST *node)
+int checkBothOperands(AST *node)
 {
     if (node == 0)
-        return;
+        return 0;
+
+    if (!node->son[1])
+    {
+        if (isFloat(node))
+            return AST_FLOAT;
+        else if (isNumber(node))
+            return AST_INT;
+        else
+            return 0;
+    }
 
     if (isFloat(node->son[0]) && isFloat(node->son[1]))
-    {
-    }
+        return AST_FLOAT;
     else if (isNumber(node->son[0]) && isNumber(node->son[1]))
-    {
-    }
+        return AST_INT;
     else
-    {
-        fprintf(stderr, "Semantic ERROR: operands are incompatible\n");
-        ++semanticErrors;
-    }
-
-    // int isLeftOperandFloat = 0;
-    // int isRightOperandFloat = 0;
-
-    // if (node->son[0] && node->son[0]->symbol != 0)
-    // {
-    //     isLeftOperandFloat = isFloat(node->son[0]);
-    // }
-
-    // if (node->son[1] && node->son[1]->symbol != 0)
-    // {
-    //     isRightOperandFloat = isFloat(node->son[1]);
-    // }
-
-    // if (isLeftOperandFloat || isRightOperandFloat)
-    // {
-    //     if ((isLeftOperandFloat && node->son[1]->symbol == 0) || (isRightOperandFloat && node->son[0]->symbol == 0))
-    //         return;
-
-    //     else if ((isLeftOperandFloat && !isRightOperandFloat) || (!isLeftOperandFloat && isRightOperandFloat))
-    //     {
-    //         fprintf(stderr, "Semantic ERROR: operands are incompatible\n");
-    //         ++semanticErrors;
-    //     }
-    // }
-
-    // if (node->son[0])
-    //     if (!isNumber(node->son[0]))
-    //     {
-    //         fprintf(stderr, "Semantic ERROR: invalid left operand\n");
-    //         ++semanticErrors;
-    //     }
-
-    // if (node->son[1])
-    //     if (!isNumber(node->son[1]))
-    //     {
-    //         fprintf(stderr, "Semantic ERROR: invalid right operand\n");
-    //         ++semanticErrors;
-    //     }
+        return 0;
 }
 
 int isFloat(AST *son)
@@ -449,6 +419,9 @@ int isFloat(AST *son)
     bool isTypeFloat = false;
     bool isValidVar = false;
     bool isValidParam = false;
+
+    if (!son)
+        return 0;
 
     if (son->symbol != 0)
     {
@@ -468,9 +441,9 @@ int isFloat(AST *son)
          son->type == AST_GE ||
          son->type == AST_EQ ||
          son->type == AST_DIF ||
-         son->type == AST_BRACKETS_EXPR ||
-         son->type == AST_ARRAY_ACCESS ||
          son->type == AST_NOT ||
+         (son->type == AST_ARRAY_ACCESS && isTypeFloat) ||
+         (son->type == AST_BRACKETS_EXPR && isFloat(son->son[0])) ||
          (son->type == AST_SYMBOL && (isLitFloat || isValidVar || isValidParam)) ||
          (son->type == AST_FUNC_CALL && isTypeFloat)))
         return 1;
@@ -484,6 +457,9 @@ int isNumber(AST *son)
     bool isTypeIntOrChar = false;
     bool isValidVar = false;
     bool isValidParam = false;
+
+    if (!son)
+        return 0;
 
     if (son->symbol != 0)
     {
@@ -503,9 +479,9 @@ int isNumber(AST *son)
          son->type == AST_GE ||
          son->type == AST_EQ ||
          son->type == AST_DIF ||
-         son->type == AST_BRACKETS_EXPR ||
-         son->type == AST_ARRAY_ACCESS ||
          son->type == AST_NOT ||
+         (son->type == AST_ARRAY_ACCESS && isTypeIntOrChar) ||
+         (son->type == AST_BRACKETS_EXPR && isNumber(son->son[0])) ||
          (son->type == AST_SYMBOL && (isLitIntOrChar || isValidVar || isValidParam)) ||
          (son->type == AST_FUNC_CALL && isTypeIntOrChar)))
         return 1;
@@ -513,96 +489,61 @@ int isNumber(AST *son)
         return 0;
 }
 
-void checkAssignments(AST *node) 
+void checkAssignmentsType(AST *node)
 {
     int i;
-    int type = 0;
 
-    if(node == 0) 
+    if (node == 0)
         return;
 
-    switch (node->type) 
-    {
-        case AST_FUNC_DEC:
-            searchForAssignments(node);
-            break;
-        default:
-            break;
-    }
+    if (node->type == AST_ASSIGNMENT)
+        matchAssignmentTypeWithExpressionType(node->symbol->dataType, node);
 
     for (i = 0; i < MAXSONS; ++i)
     {
-        checkAssignments(node->son[i]);
+        checkAssignmentsType(node->son[i]);
     }
 }
 
-void searchForAssignments(AST *node) 
+void matchAssignmentTypeWithExpressionType(int assignmentDataType, AST *assignmentNode)
 {
-    if(node->son[0] == 0 || node->son[2] == 0 || node->symbol == 0)
+    if (!assignmentNode)
         return;
 
-    int functionType = node->son[0]->type;
-    char* functionName = node->symbol->text;
-
-    AST *cmdBlockPointer = node->son[2];
-
-    while(cmdBlockPointer)
+    if (assignmentNode->symbol->type == SYMBOL_VECTOR)
     {
-        switch (cmdBlockPointer->type)
+        if ((assignmentDataType == DATA_TYPE_INT || assignmentDataType == DATA_TYPE_CHAR) && checkBothOperands(assignmentNode->son[1]) != AST_INT ||
+            (assignmentDataType == DATA_TYPE_FLOAT && checkBothOperands(assignmentNode->son[1]) != AST_FLOAT))
         {
-        case AST_CMD_BLOCK:
-            cmdBlockPointer = cmdBlockPointer->son[0];
-            break;
-        case AST_CMD_LIST:
-        case AST_CMD_LIST_TAIL:
-            if(cmdBlockPointer->son[0] != 0) {
-                if(cmdBlockPointer->son[0]->type == AST_ASSIGNMENT) 
-                {
-                    matchAssignmentTypeWithExpressionType(cmdBlockPointer->son[0]->symbol->dataType, cmdBlockPointer->son[0]);
-                }
-            }
-            cmdBlockPointer = cmdBlockPointer->son[1];
-            break;
-        default:
-            break;
+            fprintf(stderr, "Semantic ERROR: vector assignment type is invalid\n");
+            ++semanticErrors;
+        }
+    }
+    else if (assignmentNode->symbol->type == SYMBOL_VARIABLE)
+    {
+        if ((assignmentDataType == DATA_TYPE_INT || assignmentDataType == DATA_TYPE_CHAR) && checkBothOperands(assignmentNode->son[0]) != AST_INT ||
+            (assignmentDataType == DATA_TYPE_FLOAT && checkBothOperands(assignmentNode->son[0]) != AST_FLOAT))
+        {
+            fprintf(stderr, "Semantic ERROR: variable assignment type is invalid\n");
+            ++semanticErrors;
         }
     }
 }
 
-void matchAssignmentTypeWithExpressionType(int assignmentDataType, AST* assignmentNode) {
-    
-    if(!assignmentNode)
-        return;
-
-    if(assignmentNode->symbol->type == SYMBOL_VECTOR) 
-    {
-        // Atribuicao com vetor (do lado esquerdo)
-        // Basicamente aqui o assignmentNode->[1] é a expression do lado direito do assignment e descobrindo o tipo dessa expression a gente consegue fazer uma comparacao com o assignmentDataType. 
-
-    } else if (assignmentNode->symbol->type == SYMBOL_VARIABLE) {
-
-        // Atribuicao com variavel (do lado esquerod)
-        // Basicamente aqui o assignmentNode->[0] é a expression do lado direito do assignment e descobrindo o tipo dessa expression a gente consegue fazer uma comparacao com o assignmentDataType. 
-    }
-} 
-
-// Abaixo sao as funcoes usadas para verificar o match do tipo do retorno de uma funcao com o tipo da funcao
-
-void checkFunctionsReturnType(AST *node) 
+void checkFunctionsReturnType(AST *node)
 {
     int i;
-    int type = 0;
 
-    if(node == 0) 
+    if (node == 0)
         return;
 
-    switch (node->type) 
+    switch (node->type)
     {
-        case AST_FUNC_DEC:
-            searchFunctionReturnFor(node);
-            break;
-        default:
-            break;
+    case AST_FUNC_DEC:
+        searchFunctionReturnFor(node);
+        break;
+    default:
+        break;
     }
 
     for (i = 0; i < MAXSONS; ++i)
@@ -611,18 +552,17 @@ void checkFunctionsReturnType(AST *node)
     }
 }
 
-void searchFunctionReturnFor(AST *node) 
+void searchFunctionReturnFor(AST *node)
 {
-
-    if(node->son[0] == 0 || node->son[2] == 0 || node->symbol == 0)
+    if (node->son[0] == 0 || node->son[2] == 0 || node->symbol == 0)
         return;
 
     int functionType = node->son[0]->type;
-    char* functionName = node->symbol->text;
+    char *functionName = node->symbol->text;
 
     AST *cmdBlockPointer = node->son[2];
 
-    while(cmdBlockPointer)
+    while (cmdBlockPointer)
     {
         switch (cmdBlockPointer->type)
         {
@@ -631,8 +571,9 @@ void searchFunctionReturnFor(AST *node)
             break;
         case AST_CMD_LIST:
         case AST_CMD_LIST_TAIL:
-            if(cmdBlockPointer->son[0] != 0) {
-                if(cmdBlockPointer->son[0]->type == AST_RETURN) 
+            if (cmdBlockPointer->son[0] != 0)
+            {
+                if (cmdBlockPointer->son[0]->type == AST_RETURN)
                 {
                     matchReturnTypeWithFunctionType(functionType, cmdBlockPointer->son[0]);
                 }
@@ -645,14 +586,105 @@ void searchFunctionReturnFor(AST *node)
     }
 }
 
-// TRABALHAR AQUI:
-
-void matchReturnTypeWithFunctionType(int functionType, AST* returnNode) {
-    
-    if(!returnNode)
+void matchReturnTypeWithFunctionType(int functionType, AST *returnNode)
+{
+    if (!returnNode)
         return;
 
-    // Basicamente aqui o returnNode->[0] é a expression do return e descobrindo o tipo dessa expression a gente consegue fazer uma comparacao com o functionType. 
+    if ((functionType == AST_INT || functionType == AST_CHAR) && checkBothOperands(returnNode->son[0]) != AST_INT ||
+        (functionType == AST_FLOAT && checkBothOperands(returnNode->son[0]) != AST_FLOAT))
+    {
+        fprintf(stderr, "Semantic ERROR: return type is invalid\n");
+        ++semanticErrors;
+    }
+}
 
-    //fprintf(stderr, "Return to tipo: %d", returnNode->son[0]->type);
+void checkUseOf(AST *node)
+{
+    int i;
+
+    if (node == 0)
+        return;
+
+    switch (node->type)
+    {
+    case AST_ARRAY_ACCESS:
+        if (node->symbol->type != SYMBOL_VECTOR)
+        {
+            fprintf(stderr, "Semantic ERROR: %s is not a vector\n", node->symbol->text);
+            ++semanticErrors;
+        }
+        break;
+    case AST_FUNC_CALL:
+        if (node->symbol->type != SYMBOL_FUNCTION)
+        {
+            fprintf(stderr, "Semantic ERROR: %s is not a function\n", node->symbol->text);
+            ++semanticErrors;
+        }
+        break;
+    case AST_ASSIGNMENT:
+        if (node->symbol)
+        {
+            if (node->symbol->type != SYMBOL_VARIABLE && !node->son[1])
+            {
+                fprintf(stderr, "Semantic ERROR: %s is not a variable\n", node->symbol->text);
+                ++semanticErrors;
+            }
+
+            if (node->symbol->type != SYMBOL_VECTOR && node->son[1])
+            {
+                fprintf(stderr, "Semantic ERROR: %s is not a vector\n", node->symbol->text);
+                ++semanticErrors;
+            }
+
+            if (node->symbol->type == SYMBOL_FUNCTION)
+            {
+                fprintf(stderr, "Semantic ERROR: functions are not assignable\n");
+                ++semanticErrors;
+            }
+        }
+        break;
+    case AST_SYMBOL:
+        if (node->symbol->type == SYMBOL_LITCHAR || node->symbol->type == SYMBOL_LITFLOAT || node->symbol->type == SYMBOL_LITINT)
+            break;
+        if (node->symbol->type != SYMBOL_VARIABLE && node->symbol->type != SYMBOL_PARAM)
+        {
+            fprintf(stderr, "Semantic ERROR: %s is not a variable\n", node->symbol->text);
+            ++semanticErrors;
+        }
+        break;
+    }
+
+    // if (node->type == AST_ASSIGNMENT && node->symbol)
+    //     switch (node->symbol->type)
+    //     {
+    //     case SYMBOL_PARAM:
+    //     case SYMBOL_VARIABLE:
+    //         if (node->son[1])
+    //         {
+    //             fprintf(stderr, "symbol type: %s, son type: %d\n", node->symbol->text, node->son[1]->type);
+    //             if (node->son[1]->type == AST_ARRAY_ACCESS || node->son[1]->type == AST_FUNC_CALL)
+    //             {
+    //                 fprintf(stderr, "Semantic ERROR: invalid use of variable/param\n");
+    //                 ++semanticErrors;
+    //             }
+    //         }
+    //         break;
+    //     case SYMBOL_VECTOR:
+    //         if (!node->son[1])
+    //         {
+    //             fprintf(stderr, "Semantic ERROR: invalid use of vector\n");
+    //             ++semanticErrors;
+    //         }
+    //         break;
+    //     case SYMBOL_FUNCTION:
+    //         fprintf(stderr, "Semantic ERROR: invalid use of function\n");
+    //         ++semanticErrors;
+    //         break;
+    //     }
+
+    for (i = 0; i < MAXSONS; ++i)
+    {
+        checkUseOf(node->son[i]);
+    }
 }
