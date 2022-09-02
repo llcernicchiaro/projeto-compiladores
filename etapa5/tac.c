@@ -142,7 +142,7 @@ void tacPrintBack(TAC *tac)
     TAC *node;
 
     for (node = tac; node; node = node->prev)
-        tacPrint(node);
+        tacPrintSingle(node);
 }
 
 TAC *tacJoin(TAC *tac1, TAC *tac2)
@@ -164,12 +164,12 @@ TAC *tacGenerateCode(AST *node)
 {
     int i;
     TAC *result = 0;
-    TAC *code[MAX_SONS];
+    TAC *code[MAXSONS];
 
     if (!node)
         return 0;
 
-    for (i = 0; i < MAX_SONS; i++)
+    for (i = 0; i < MAXSONS; i++)
     {
         code[i] = tacGenerateCode(node->son[i]);
     }
@@ -209,7 +209,7 @@ TAC *tacGenerateCode(AST *node)
     case AST_DIF:
         result = makeBinaryOperation(code[0], code[1], TAC_DIF);
         break;
-    case AST_ATTR:
+    case AST_ASSIGNMENT:
         result = tacJoin(code[0], tacCreate(TAC_COPY, node->symbol, code[0] ? code[0]->res : 0, code[1] ? code[1]->res : 0));
         break;
     case AST_FUNC_DEC:
@@ -230,7 +230,7 @@ TAC *tacGenerateCode(AST *node)
     case AST_IF:
         result = makeIfThenElse(code[0], code[1], code[2]);
         break;
-    case AST_VEC_DEC:
+    case AST_GLOBAL_VECTOR_DECLARATION:
         result = tacJoin(tacCreate(TAC_VEC_DECLARATION, node->symbol, 0, 0), code[1]);
 
     default:
