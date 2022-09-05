@@ -38,6 +38,7 @@
 #define TAC_IF_ELSE 27
 #define TAC_VEC_DECLARATION 28
 #define TAC_VAR_DECLARATION 29
+#define TAC_PARAM 30
 
 typedef struct tac_node
 {

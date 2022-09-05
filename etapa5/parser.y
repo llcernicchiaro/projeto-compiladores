@@ -75,9 +75,9 @@ program: declarationList  { $$ = $1;
                             checkGlobalVectorDeclaration($1);
                             checkFunctionsReturnType($1);
                             checkAssignmentsType($1);
+                            tacPrintBack(tacGenerateCode($1));
                             if (semanticErrors > 0)
                               exit(4);
-                            tacPrintBack(tacGenerateCode($1));
                           }
   ;
 
