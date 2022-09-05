@@ -110,7 +110,7 @@ HASH_NODE* makeLabel()
 	return hashInsert(buffer, SYMBOL_LABEL);
 }
 
-HASH_NODE* make_temp(void) 
+HASH_NODE* makeTemp(void) 
 {
     static int serial = 0;
     char buffer[256];
