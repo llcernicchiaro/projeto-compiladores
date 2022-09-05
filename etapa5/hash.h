@@ -40,7 +40,7 @@ HASH_NODE *hashFind(char *text);
 HASH_NODE *hashInsert(char *text, int type);
 void hashPrint();
 int hashCheckUndeclared();
-HASH_NODE* makeLabel();
-HASH_NODE* makeTemp();
+HASH_NODE *makeLabel();
+HASH_NODE *makeTemp();
 
 #endif
