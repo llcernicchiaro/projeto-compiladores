@@ -137,6 +137,10 @@ void tacPrintSingle(TAC *tac)
         fprintf(stderr, "TAC_VEC_DECLARATION");
         break;
 
+    case TAC_VAR_DECLARATION:
+        fprintf(stderr, "TAC_VAR_DECLARATION");
+        break;
+
     default:
         fprintf(stderr, "TAC_UNKNOWN - %d", tac->type);
         break;
@@ -252,7 +256,9 @@ TAC *tacGenerateCode(AST *node)
     case AST_WHILE:
         result = makeWhile(code[0], code[1]);
         break;
-
+    case AST_GLOBAL_VARIABLE_DECLARATION:
+         result = tacJoin(tacCreate(TAC_VAR_DECLARATION, node->symbol, 0, 0), code[1]); 
+        break;
     default:
         result = tacJoin(code[0], tacJoin(code[1], tacJoin(code[2], code[3])));
     }
