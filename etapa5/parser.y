@@ -6,6 +6,7 @@
     #include <stdlib.h>
     #include "ast.h"
     #include "semantic.h"
+    #include "tac.h"
 
     extern int yylineno;
     FILE *out = NULL;
@@ -76,6 +77,7 @@ program: declarationList  { $$ = $1;
                             checkAssignmentsType($1);
                             if (semanticErrors > 0)
                               exit(4);
+                            tacPrintBack(tacGenerateCode($1));
                           }
   ;
 

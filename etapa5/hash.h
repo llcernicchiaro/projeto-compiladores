@@ -19,6 +19,7 @@
 #define SYMBOL_FUNCTION 7
 #define SYMBOL_VECTOR 8
 #define SYMBOL_PARAM 9
+#define SYMBOL_LABEL 10
 
 #define DATA_TYPE_INT 1
 #define DATA_TYPE_FLOAT 2
@@ -39,5 +40,7 @@ HASH_NODE *hashFind(char *text);
 HASH_NODE *hashInsert(char *text, int type);
 void hashPrint();
 int hashCheckUndeclared();
+HASH_NODE* makeLabel();
+HASH_NODE* makeTemp();
 
 #endif

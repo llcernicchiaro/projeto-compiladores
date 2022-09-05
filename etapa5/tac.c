@@ -3,6 +3,13 @@
 
 #include "tac.h"
 
+TAC* makeFunc(AST* symbol, TAC* code1, TAC* code2);
+TAC *makeIfThen(TAC *expr, TAC *body);
+TAC *makeWhile(TAC *expr, TAC *body);
+TAC* makeIfThenElse(TAC* expr, TAC* cIf, TAC* cElse);
+TAC* makeCondJump(TAC* label, TAC* expr);
+TAC* makeIncondJump(TAC* label);
+
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2)
 {
     TAC *newTAC;
@@ -160,6 +167,11 @@ TAC *tacJoin(TAC *tac1, TAC *tac2)
     return tac2;
 }
 
+TAC* makeBinaryOperation(TAC* code0, TAC* code1, int tactype)
+{
+    return tacJoin(tacJoin(code0, code1), tacCreate(tactype, makeTemp(), code0?code0->res:0, code1?code1->res:0));
+}
+
 TAC *tacGenerateCode(AST *node)
 {
     int i;
@@ -238,4 +250,52 @@ TAC *tacGenerateCode(AST *node)
     }
 
     return result;
+}
+
+TAC* makeFunc(AST* node, TAC* param, TAC* cFunc){
+    HASH_NODE* labelFuncBegin = makeLabel();
+    HASH_NODE* labelFuncEnd = makeLabel();
+
+    TAC* funcBeg = tacCreate(TAC_BEGIN_FUN, node->symbol, labelFuncBegin, 0);
+    TAC* funcEnd = tacCreate(TAC_END_FUN, node->symbol, labelFuncEnd, 0);
+    return tacJoin(funcBeg, tacJoin(param, tacJoin(cFunc, funcEnd)));
+}
+
+TAC *makeWhile(TAC *expr, TAC *body)
+{
+    HASH_NODE *labelBefore = makeLabel();
+    HASH_NODE *labelAfter = makeLabel();
+
+    TAC *tacLabelBefore = tacCreate(TAC_LABEL, labelBefore, 0, 0);
+    TAC *tacLabelAfter = tacCreate(TAC_LABEL, labelAfter, 0, 0);
+
+    TAC *tacJumpFalse = makeCondJump(tacLabelAfter, expr);
+
+    TAC *tacJumpBefore = makeIncondJump(tacLabelBefore);
+
+    TAC *labelExprAndJump = tacJoin(tacLabelBefore, tacJoin(expr, tacJumpFalse));
+    TAC *blockWithJumpAndLabel = tacJoin(tacJoin(body, tacJumpBefore), tacLabelAfter);
+
+    TAC *fullWhile = tacJoin(labelExprAndJump, blockWithJumpAndLabel);
+
+    return fullWhile;
+}
+
+TAC* makeCondJump(TAC* label, TAC* expr) {
+    return tacCreate(TAC_JFALSE, label ? label->res : 0, expr ? expr->res : 0, 0);
+}
+
+TAC* makeIncondJump(TAC* label) {
+    return tacCreate(TAC_JUMP, label ? label->res : 0, 0, 0);
+}
+
+TAC* makeIfThenElse(TAC* expr, TAC* cIf, TAC* cElse){
+    HASH_NODE* newLabelElse = makeLabel();
+    HASH_NODE* newLabelCont = makeLabel();
+
+    TAC* ifThenElse = tacCreate(TAC_IF_ELSE, expr?expr->res:0, newLabelElse, 0);
+    TAC* labelElse = tacCreate(TAC_LABEL, newLabelElse, 0, 0);
+    TAC* labelCont = tacCreate(TAC_LABEL, newLabelCont, 0, 0);
+    TAC* jump = tacCreate(TAC_JUMP, newLabelCont, 0, 0);
+    return tacJoin(expr, tacJoin(ifThenElse, tacJoin(cIf, tacJoin(jump, tacJoin(labelElse, tacJoin(cElse, labelCont))))));
 }

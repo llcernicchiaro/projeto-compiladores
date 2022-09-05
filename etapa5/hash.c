@@ -101,3 +101,19 @@ int hashCheckUndeclared()
 
     return undeclared;
 }
+
+HASH_NODE* makeLabel() 
+{
+	static int serial = 0;
+	char buffer[256];
+	sprintf(buffer, "Weird__label%d", serial++);
+	return hashInsert(buffer, SYMBOL_LABEL);
+}
+
+HASH_NODE* make_temp(void) 
+{
+    static int serial = 0;
+    char buffer[256];
+    sprintf(buffer, "mYWeeirdT_emp_%d", serial++);
+    return hashInsert(buffer, SYMBOL_VARIABLE);
+}
