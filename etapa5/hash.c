@@ -102,15 +102,15 @@ int hashCheckUndeclared()
     return undeclared;
 }
 
-HASH_NODE* makeLabel() 
+HASH_NODE *makeLabel()
 {
-	static int serial = 0;
-	char buffer[256];
-	sprintf(buffer, "Weird__label%d", serial++);
-	return hashInsert(buffer, SYMBOL_LABEL);
+    static int serial = 0;
+    char buffer[256];
+    sprintf(buffer, "Weird__label%d", serial++);
+    return hashInsert(buffer, SYMBOL_LABEL);
 }
 
-HASH_NODE* makeTemp(void) 
+HASH_NODE *makeTemp(void)
 {
     static int serial = 0;
     char buffer[256];
