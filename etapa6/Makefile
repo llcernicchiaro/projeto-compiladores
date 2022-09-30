@@ -1,7 +1,7 @@
 # Douglas Gehring - 00243682
 # Lorenzo Cernicchiaro - 00287718
 
-etapa5: y.tab.o lex.yy.o ast.o hash.o semantic.o tac.o asm.o main.o 
+etapa6: y.tab.o lex.yy.o ast.o hash.o semantic.o tac.o asm.o main.o 
 	gcc y.tab.o lex.yy.o ast.o hash.o semantic.o tac.o asm.o main.o -o etapa6
 
 main.o: main.c
