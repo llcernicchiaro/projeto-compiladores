@@ -1,13 +1,7 @@
-int v[10] 0 0 0 0 0 0 0 0 0 0;
-int x[2] 0 0;
-float a (2,5);
-float incn(int i char c float f) 
+int a (2);
+int incn(int n int x) 
 {
-if(incn)
-{
-v [10] <- i + i;
+a <- (n + x);
+return (n);
 
-}
-;
-return i + i
 }

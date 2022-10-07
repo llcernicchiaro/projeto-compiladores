@@ -56,7 +56,6 @@ char example () {
     };
     
 float b (2,5);
-#\
 
 int v[10] 0 0 0 0 0 0 0 0 0 0;
 int x[2] 0 0;
@@ -70,3 +69,21 @@ float incn (int i char c float f )
     };
     return i + i
   }
+
+int a (2);
+int x[2] 0 0;
+
+char main() {
+  print "OK!";
+  x['C'] <- 5 + 5;
+  return "OK!";
+}
+#\
+
+int a (2);
+
+int incn ( int n  int x )
+{
+  a <- (n + x);
+  return (n);
+}

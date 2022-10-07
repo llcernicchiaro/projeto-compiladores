@@ -329,6 +329,7 @@ void generateSource(AST *node, FILE *out)
         break;
     case AST_PRINT_PARAM_LIST:
         generateSource(temp->son[0], out);
+        fprintf(out, " ");
         generateSource(temp->son[1], out);
         break;
     case AST_READ:
