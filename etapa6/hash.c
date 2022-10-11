@@ -60,6 +60,8 @@ HASH_NODE *hashInsert(char *text, int type)
     strcpy(newNode->text, text);
     newNode->next = table[address];
     newNode->arguments = NULL;
+    newNode->value = (char *)calloc(strlen(text) + 1, sizeof(char));
+    newNode->values = NULL;
     newNode->dataType = 0;
     table[address] = newNode;
 
@@ -102,15 +104,15 @@ int hashCheckUndeclared()
     return undeclared;
 }
 
-HASH_NODE* makeLabel() 
+HASH_NODE *makeLabel()
 {
-	static int serial = 0;
-	char buffer[256];
-	sprintf(buffer, "Weird__label%d", serial++);
-	return hashInsert(buffer, SYMBOL_LABEL);
+    static int serial = 0;
+    char buffer[256];
+    sprintf(buffer, "Weird__label%d", serial++);
+    return hashInsert(buffer, SYMBOL_LABEL);
 }
 
-HASH_NODE* makeTemp(void) 
+HASH_NODE *makeTemp(void)
 {
     static int serial = 0;
     char buffer[256];
@@ -118,18 +120,52 @@ HASH_NODE* makeTemp(void)
     return hashInsert(buffer, SYMBOL_VARIABLE);
 }
 
-void hashPrintASM(FILE* fout)
+char *removeChars(char *s, char c)
+{
+    char *temp = s;
+    int writer = 0, reader = 0;
+
+    while (temp[reader])
+    {
+        if (temp[reader] != c)
+        {
+            temp[writer++] = temp[reader];
+        }
+
+        reader++;
+    }
+
+    temp[writer] = 0;
+
+    return temp;
+}
+
+void hashPrintASM(FILE *fout)
 {
     int i;
     HASH_NODE *node;
 
-    fprintf(fout, "\t.section	__DATA,__data\n");
-    
-    for(i=0;i<HASH_SIZE;i++)
-    {
-        for(node=table[i]; node; node = node->next) 
+    fprintf(fout, "## DATA_SECTION\n");
+
+    for (i = 0; i < HASH_SIZE; i++)
+        for (node = table[i]; node; node = node->next)
         {
-            fprintf(fout, "_%s: .long 0\n", node->text);
+            switch (node->type)
+            {
+            case SYMBOL_STRING:
+                fprintf(fout, "_%s:\n\t.string\t\"%s\"\n", removeChars(node->text, '"'), node->text);
+                break;
+            case SYMBOL_LITCHAR:
+            case SYMBOL_LITINT:
+            case SYMBOL_LITFLOAT:
+                fprintf(fout, "_%s:\n\t.long\t%s\n", node->text, node->text);
+                break;
+            case SYMBOL_VARIABLE:
+                fprintf(fout, "_%s:\n\t.long\t%s\n", node->text, node->value);
+                break;
+            case SYMBOL_VECTOR:
+
+                break;
+            }
         }
-    }
 }

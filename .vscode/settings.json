@@ -4,7 +4,9 @@
         "symbols.h": "c",
         "y.tab.h": "c",
         "ast.h": "c",
-        "hash.h": "c"
+        "hash.h": "c",
+        "asm.h": "c",
+        "tac.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

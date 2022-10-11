@@ -29,7 +29,10 @@ void checkAndSetDeclarations(AST *node)
         }
 
         node->symbol->type = SYMBOL_VARIABLE;
-
+        if (node->son[1])
+        {
+            node->symbol->value = node->son[1]->son[0]->symbol->text;
+        }
         setDataTypeWith(node);
 
         break;
@@ -67,6 +70,7 @@ void checkAndSetDeclarations(AST *node)
         }
 
         node->symbol->type = SYMBOL_VECTOR;
+        node->symbol->values = node->son[3]->son[0];
 
         setDataTypeWith(node);
 
@@ -395,6 +399,9 @@ int checkBothOperands(AST *node)
     if (node == 0)
         return 0;
 
+    if (node->type == AST_BRACKETS_EXPR)
+        return checkBothOperands(node->son[0]);
+
     if (!node->son[1])
     {
         if (isFloat(node))
@@ -443,7 +450,6 @@ int isFloat(AST *son)
          son->type == AST_DIF ||
          son->type == AST_NOT ||
          (son->type == AST_ARRAY_ACCESS && isTypeFloat) ||
-         (son->type == AST_BRACKETS_EXPR && isFloat(son->son[0])) ||
          (son->type == AST_SYMBOL && (isLitFloat || isValidVar || isValidParam)) ||
          (son->type == AST_FUNC_CALL && isTypeFloat)))
         return 1;
@@ -481,7 +487,6 @@ int isNumber(AST *son)
          son->type == AST_DIF ||
          son->type == AST_NOT ||
          (son->type == AST_ARRAY_ACCESS && isTypeIntOrChar) ||
-         (son->type == AST_BRACKETS_EXPR && isNumber(son->son[0])) ||
          (son->type == AST_SYMBOL && (isLitIntOrChar || isValidVar || isValidParam)) ||
          (son->type == AST_FUNC_CALL && isTypeIntOrChar)))
         return 1;
@@ -645,7 +650,8 @@ void checkUseOf(AST *node)
         }
         break;
     case AST_SYMBOL:
-        if (node->symbol->type == SYMBOL_LITCHAR || node->symbol->type == SYMBOL_LITFLOAT || node->symbol->type == SYMBOL_LITINT)
+        if (node->symbol->type == SYMBOL_LITCHAR || node->symbol->type == SYMBOL_LITFLOAT ||
+            node->symbol->type == SYMBOL_LITINT || node->symbol->type == SYMBOL_STRING)
             break;
         if (node->symbol->type != SYMBOL_VARIABLE && node->symbol->type != SYMBOL_PARAM)
         {
@@ -654,34 +660,6 @@ void checkUseOf(AST *node)
         }
         break;
     }
-
-    // if (node->type == AST_ASSIGNMENT && node->symbol)
-    //     switch (node->symbol->type)
-    //     {
-    //     case SYMBOL_PARAM:
-    //     case SYMBOL_VARIABLE:
-    //         if (node->son[1])
-    //         {
-    //             fprintf(stderr, "symbol type: %s, son type: %d\n", node->symbol->text, node->son[1]->type);
-    //             if (node->son[1]->type == AST_ARRAY_ACCESS || node->son[1]->type == AST_FUNC_CALL)
-    //             {
-    //                 fprintf(stderr, "Semantic ERROR: invalid use of variable/param\n");
-    //                 ++semanticErrors;
-    //             }
-    //         }
-    //         break;
-    //     case SYMBOL_VECTOR:
-    //         if (!node->son[1])
-    //         {
-    //             fprintf(stderr, "Semantic ERROR: invalid use of vector\n");
-    //             ++semanticErrors;
-    //         }
-    //         break;
-    //     case SYMBOL_FUNCTION:
-    //         fprintf(stderr, "Semantic ERROR: invalid use of function\n");
-    //         ++semanticErrors;
-    //         break;
-    //     }
 
     for (i = 0; i < MAXSONS; ++i)
     {

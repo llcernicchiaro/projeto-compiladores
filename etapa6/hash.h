@@ -32,6 +32,8 @@ typedef struct hash_node
     char *text;
     struct AST *arguments;
     struct hash_node *next;
+    char *value;
+    struct AST *values;
 } HASH_NODE;
 
 void hashInit();
@@ -40,8 +42,9 @@ HASH_NODE *hashFind(char *text);
 HASH_NODE *hashInsert(char *text, int type);
 void hashPrint();
 int hashCheckUndeclared();
-HASH_NODE* makeLabel();
-HASH_NODE* makeTemp();
-void hashPrintASM(FILE* fout);
+HASH_NODE *makeLabel();
+HASH_NODE *makeTemp();
+char *removeChars(char *s, char c);
+void hashPrintASM(FILE *fout);
 
 #endif

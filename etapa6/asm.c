@@ -3,28 +3,81 @@
 
 #include "asm.h"
 
-// 	.section	__DATA,__data
-// _a: .long	2                               ## 0x2
-
-// 	.section	__TEXT,__cstring,cstring_literals
-// L_.str:                                 ## @.str
-// 	.asciz	"%d"
+char *getPercentChar(int type)
+{
+    switch (type)
+    {
+    case DATA_TYPE_INT:
+        return ".percentInt";
+    case DATA_TYPE_CHAR:
+        return ".percentChar";
+    case DATA_TYPE_FLOAT:
+        return ".percentFloat";
+    }
+}
 
 void generateASM(TAC *tac, FILE *fout)
 {
+    fprintf(fout,
+            "## FILE_INIT\n"
+            "\t.file	\"output.txt\"\n"
+            "\t.text\n");
 
-    // Sempre no inicio estrutura padrao:
-
-    printASMInitStatement(fout);
-
-    // Varrer a lista de tacs
-
-    bool isCurrentFunctionMain = false;
+    fprintf(fout,
+            "\n.percentInt:\n"
+            "\t.string	\"%%d\\n\"");
+    fprintf(fout,
+            "\n.percentChar:\n"
+            "\t.string	\"%%c\\n\"");
+    fprintf(fout,
+            "\n.percentFloat:\n"
+            "\t.string	\"%%f\\n\"");
 
     for (; tac; tac = tac->next)
     {
         switch (tac->type)
         {
+        case TAC_BEGIN_FUN:
+            fprintf(fout,
+                    "## TAC_BEGIN_FUN\n"
+                    "\t.globl %s\n"
+                    "%s:\n"
+                    "\tpushq	%%rbp\n"
+                    "\tmovq	%%rsp, %%rbp\n",
+                    tac->res->text, tac->res->text);
+            break;
+        case TAC_END_FUN:
+            fprintf(fout,
+                    "## TAC_END_FUN\n"
+                    "\tmovl	$0, %%eax\n"
+                    "\tpopq	%%rbp\n"
+                    "\tret\n");
+            break;
+        case TAC_PRINT:
+            fprintf(fout, "## TAC_PRINT\n");
+            if (tac->op1->type == SYMBOL_VARIABLE)
+            {
+                fprintf(fout,
+                        "\tmovl	_%s(%%rip), %%eax\n"
+                        "\tmovl	%%eax, %%esi\n",
+                        removeChars(tac->op1->text, '"'));
+
+                fprintf(fout,
+                        "\tleaq	%s(%%rip), %%rdi\n"
+                        "\tmovl	$0, %%eax\n"
+                        "\tcall	printf@PLT\n",
+                        getPercentChar(tac->op1->dataType));
+            }
+            else
+            {
+                fprintf(fout,
+                        "\tleaq	_%s(%%rip), %%rdi\n"
+                        "\tmovl	$0, %%eax\n"
+                        "\tcall	printf@PLT\n",
+                        removeChars(tac->op1->text, '"'));
+            }
+
+            break;
         case TAC_SYMBOL:
             // Fazer nada
             break;
@@ -46,14 +99,6 @@ void generateASM(TAC *tac, FILE *fout)
         case TAC_LABEL:
             printASMElement(fout, "TAC_LABEL");
             break;
-        case TAC_BEGIN_FUN:
-            isCurrentFunctionMain = isMainFunction(tac->res->text);
-            printASMBeginOfFunction(fout, tac->res->text);
-            break;
-        case TAC_END_FUN:
-            printASMEndOfFunction(fout, isCurrentFunctionMain);
-            isCurrentFunctionMain = false;
-            break;
         case TAC_IFZ:
             printASMElement(fout, "TAC_IFZ");
             break;
@@ -68,9 +113,6 @@ void generateASM(TAC *tac, FILE *fout)
             break;
         case TAC_RETURN:
             printASMElement(fout, "TAC_RETURN");
-            break;
-        case TAC_PRINT:
-            printASMElement(fout, "TAC_PRINT");
             break;
         case TAC_READ:
             printASMElement(fout, "TAC_READ");
@@ -125,51 +167,22 @@ void generateASM(TAC *tac, FILE *fout)
 
     hashPrintASM(fout);
 
-    printASMEndStatement(fout);
-}
-
-bool isMainFunction(char *identifier)
-{
-    return strcmp(identifier, "main") == 0;
+    fprintf(fout,
+            "## FILE_END\n"
+            "0:\n"
+            "\t.string\t\"GNU\"\n"
+            "1:\n"
+            "\t.align 8\n"
+            "\t.long\t0xc0000002\n"
+            "\t.long\t3f - 2f\n"
+            "2:\n"
+            "\t.long	 0x3\n"
+            "3:\n"
+            "\t.align 8\n"
+            "4:\n");
 }
 
 void printASMElement(FILE *fout, char *element)
 {
-    // fprintf(fout, "##%s\n", element);
-}
-
-void printASMEndStatement(FILE *fout)
-{
-    fprintf(fout, ".subsections_via_symbols\n");
-}
-
-void printASMInitStatement(FILE *fout)
-{
-    fprintf(fout, "\t.section	__TEXT,__text,regular,pure_instructions\n");
-}
-
-void printASMBeginOfFunction(FILE *fout, char *identifier)
-{
-    fprintf(
-        fout,
-        "\t.globl	_%s                           ## -- Begin function %s\n"
-        "_%s:                                  ## @%s\n"
-        "\t.cfi_startproc\n"
-        "## %%bb.0:\n"
-        "\tpushq	%%rbp\n"
-        "\tmovq	%%rsp, %%rbp\n"
-        "\t.cfi_def_cfa_register %%rbp\n",
-        identifier, identifier, identifier, identifier);
-}
-
-void printASMEndOfFunction(FILE *fout, bool isMain)
-{
-    if (isMain)
-    {
-        fprintf(fout, "\txorl	%%eax, %%eax\n\tpopq	%%rbp\n\tretq\n\t.cfi_endproc\n                           ## -- End of function\n");
-    }
-    else
-    {
-        fprintf(fout, "\tpopq	%%rbp\n\tretq\n\t.cfi_endproc\n                           ## -- End of function\n");
-    }
+    fprintf(fout, "## %s\n", element);
 }
