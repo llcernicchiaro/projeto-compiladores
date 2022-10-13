@@ -1,6 +1,6 @@
 int variable (10);
 int main() 
 {
-print "sal" variable + variable ;
+print variable | variable ;
 
 }

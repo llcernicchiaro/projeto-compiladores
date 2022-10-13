@@ -31,6 +31,7 @@ void checkAndSetDeclarations(AST *node)
         node->symbol->type = SYMBOL_VARIABLE;
         if (node->son[1])
         {
+            node->symbol->dataType = node->son[1]->son[0]->symbol->dataType;
             node->symbol->value = node->son[1]->son[0]->symbol->text;
         }
         setDataTypeWith(node);
@@ -71,6 +72,7 @@ void checkAndSetDeclarations(AST *node)
 
         node->symbol->type = SYMBOL_VECTOR;
         node->symbol->values = node->son[3]->son[0];
+        node->symbol->dataType = node->son[3]->son[0]->symbol->dataType;
 
         setDataTypeWith(node);
 

@@ -13,9 +13,6 @@ a:
 	.size	b, 4
 b:
 	.long	3
-	.section	.rodata
-.LC0:
-	.string	"%d"
 	.text
 	.globl	main
 	.type	main, @function
@@ -28,14 +25,15 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	##TAC_ADD
-	movl	a(%rip), %edx
+	movl	a(%rip), %eax
+	testl	%eax, %eax
+	je	.L2
 	movl	b(%rip), %eax
-	addl	%edx, %eax
-	movl	%eax, %esi
-	leaq	.LC0(%rip), %rdi
-	movl	$0, %eax
-	call	printf@PLT
+	testl	%eax, %eax
+	je	.L2
+	movl	$97, %edi
+	call	putchar@PLT
+.L2:
 	movl	$0, %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8

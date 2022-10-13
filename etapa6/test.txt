@@ -78,5 +78,5 @@ float incn (int i char c float f )
 int variable (10);
 
 int main () {
-    print "sal" variable + variable;
+    print variable | variable;
   }

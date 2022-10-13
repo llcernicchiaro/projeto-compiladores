@@ -145,7 +145,7 @@ void hashPrintASM(FILE *fout)
     int i;
     HASH_NODE *node;
 
-    fprintf(fout, "## DATA_SECTION\n");
+    fprintf(fout, "## DATA_SECTION\n.section\t.data\n");
 
     for (i = 0; i < HASH_SIZE; i++)
         for (node = table[i]; node; node = node->next)
@@ -161,7 +161,7 @@ void hashPrintASM(FILE *fout)
                 fprintf(fout, "_%s:\n\t.long\t%s\n", node->text, node->text);
                 break;
             case SYMBOL_VARIABLE:
-                fprintf(fout, "_%s:\n\t.long\t%s\n", node->text, node->value);
+                fprintf(fout, "_%s:\n\t.long\t%s\n", node->text, node->value ? node->value : "0");
                 break;
             case SYMBOL_VECTOR:
 

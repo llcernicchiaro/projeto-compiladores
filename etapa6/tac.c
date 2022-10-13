@@ -233,6 +233,12 @@ TAC *tacGenerateCode(AST *node)
     case AST_DIF:
         result = makeBinaryOperation(code[0], code[1], TAC_DIF);
         break;
+    case AST_OR:
+        result = makeBinaryOperation(code[0], code[1], TAC_OR);
+        break;
+    case AST_AND:
+        result = makeBinaryOperation(code[0], code[1], TAC_AND);
+        break;
     case AST_ASSIGNMENT:
         result = tacJoin(code[0], tacCreate(TAC_COPY, node->symbol, code[0] ? code[0]->res : 0, code[1] ? code[1]->res : 0));
         break;
