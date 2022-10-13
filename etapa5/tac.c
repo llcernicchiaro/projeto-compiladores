@@ -3,13 +3,6 @@
 
 #include "tac.h"
 
-TAC *makeFunc(AST *symbol, TAC *code1, TAC *code2);
-TAC *makeIfThen(TAC *expr, TAC *body);
-TAC *makeWhile(TAC *expr, TAC *body);
-TAC *makeIfThenElse(TAC *expr, TAC *cIf, TAC *cElse);
-TAC *makeCondJump(TAC *label, TAC *expr);
-TAC *makeIncondJump(TAC *label);
-
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2)
 {
     TAC *newTAC;
@@ -141,8 +134,8 @@ void tacPrintSingle(TAC *tac)
         fprintf(stderr, "TAC_VAR_DECLARATION");
         break;
 
-    case TAC_PARAM:
-        fprintf(stderr, "TAC_PARAM");
+    case TAC_PARAMS_FUNC_CALL:
+        fprintf(stderr, "TAC_PARAMS_FUNC_CALL");
         break;
 
     default:
@@ -158,10 +151,13 @@ void tacPrintSingle(TAC *tac)
 
 void tacPrintBack(TAC *tac)
 {
-    TAC *node;
-
-    for (node = tac; node; node = node->prev)
-        tacPrintSingle(node);
+    if (!tac)
+        return;
+    else
+    {
+        tacPrintBack(tac->prev);
+        tacPrintSingle(tac);
+    }
 }
 
 TAC *tacJoin(TAC *tac1, TAC *tac2)
@@ -182,6 +178,11 @@ TAC *tacJoin(TAC *tac1, TAC *tac2)
 TAC *makeBinaryOperation(TAC *code0, TAC *code1, int tactype)
 {
     return tacJoin(tacJoin(code0, code1), tacCreate(tactype, makeTemp(), code0 ? code0->res : 0, code1 ? code1->res : 0));
+}
+
+TAC *makeParameter(TAC *code0, TAC *code1)
+{
+    return tacJoin(tacJoin(code0, code1), tacCreate(TAC_PARAMS_FUNC_CALL, code0 ? code0->op1 : 0, 0, 0));
 }
 
 TAC *tacGenerateCode(AST *node)
@@ -239,7 +240,7 @@ TAC *tacGenerateCode(AST *node)
     case AST_FUNC_DEC:
         result = makeFunc(node, code[1], code[2]);
         break;
-    case AST_PRINT:
+    case AST_PRINT_PARAM_LIST:
         result = makeBinaryOperation(code[0], code[1], TAC_PRINT);
         break;
     case AST_READ:
@@ -250,6 +251,9 @@ TAC *tacGenerateCode(AST *node)
         break;
     case AST_FUNC_CALL:
         result = tacJoin(code[1], tacCreate(TAC_FUNC_CALL, makeTemp(), code[0] ? code[0]->res : 0, 0));
+        break;
+    case AST_PARAMS_FUNC_CALL:
+        result = makeBinaryOperation(code[0], code[1], TAC_PARAMS_FUNC_CALL);
         break;
     case AST_IF:
         result = makeIfThenElse(code[0], code[1], code[2]);
@@ -262,9 +266,6 @@ TAC *tacGenerateCode(AST *node)
         break;
     case AST_GLOBAL_VARIABLE_DECLARATION:
         result = tacJoin(tacCreate(TAC_VAR_DECLARATION, node->symbol, 0, 0), code[1]);
-        break;
-    case AST_PARAM:
-        result = tacJoin(tacCreate(TAC_PARAM, node->symbol, 0, 0), code[0]);
         break;
     default:
         result = tacJoin(code[0], tacJoin(code[1], tacJoin(code[2], code[3])));

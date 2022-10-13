@@ -51,9 +51,12 @@ void checkAndSetDeclarations(AST *node)
             }
         }
 
-        node->symbol->arguments = node->son[1];
         node->symbol->type = SYMBOL_FUNCTION;
-
+        if (node->son[1])
+        {
+            node->symbol->arguments = node->son[1];
+        }
+        
         setDataTypeWith(node);
         break;
 
@@ -69,10 +72,12 @@ void checkAndSetDeclarations(AST *node)
                 }
             }
         }
-
         node->symbol->type = SYMBOL_VECTOR;
-        node->symbol->values = node->son[3]->son[0];
-        node->symbol->dataType = node->son[3]->son[0]->symbol->dataType;
+        if (node->son[2])
+        {
+            node->symbol->values = node->son[2]->son[0];
+            node->symbol->dataType = node->son[2]->son[0]->son[0]->symbol->dataType;
+        }
 
         setDataTypeWith(node);
 

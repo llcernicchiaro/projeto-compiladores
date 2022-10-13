@@ -4,6 +4,8 @@
 #include "hash.h"
 #include "ast.h"
 
+void printVectorValuesASM(FILE *file, AST *node);
+
 HASH_NODE *table[HASH_SIZE];
 
 void hashInit()
@@ -164,8 +166,25 @@ void hashPrintASM(FILE *fout)
                 fprintf(fout, "_%s:\n\t.long\t%s\n", node->text, node->value ? node->value : "0");
                 break;
             case SYMBOL_VECTOR:
-
+                if (node->values)
+                {
+                    fprintf(fout, "_%s:\n", node->text);
+                    printVectorValuesASM(fout, node->values);
+                }
+                break;
+            default:
                 break;
             }
         }
+}
+
+void printVectorValuesASM(FILE *file, AST *node)
+{
+    if (node->son[0])
+        fprintf(file, "\t.long\t%s\n", node->son[0]->symbol->text);
+    if (node->son[1])
+        if (node->son[1]->symbol)
+            fprintf(file, "\t.long\t%s\n", node->son[1]->symbol->text);
+    if (node->son[1])
+        printVectorValuesASM(file, node->son[1]);
 }

@@ -31,7 +31,6 @@ void checkAndSetDeclarations(AST *node)
         node->symbol->type = SYMBOL_VARIABLE;
 
         setDataTypeWith(node);
-
         break;
 
     case AST_FUNC_DEC:
@@ -69,7 +68,6 @@ void checkAndSetDeclarations(AST *node)
         node->symbol->type = SYMBOL_VECTOR;
 
         setDataTypeWith(node);
-
         break;
 
     case AST_PARAM:
@@ -300,6 +298,8 @@ bool checkVectorInitializationCompatibleTypes(int type, HASH_NODE *symbol)
             return true;
         else
             return false;
+    default:
+        return false;
     }
 }
 
@@ -322,6 +322,8 @@ bool checkCompatibleTypes(int type, HASH_NODE *symbol)
             return true;
         else
             return false;
+    default:
+        return false;
     }
 }
 

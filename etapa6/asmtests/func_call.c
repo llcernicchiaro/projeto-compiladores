@@ -1,15 +1,13 @@
 #include <stdio.h>
 
-float a = 2.0;
+int a = 2;
 
-void alou() {
-    printf("%f", a);
-    sal();
+void alou(int b)
+{
+    printf("%d", 5);
 }
 
-int sal() {
-    alou();
-}
-
-int main() {
+int main()
+{
+    alou(a);
 }

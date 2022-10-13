@@ -38,7 +38,7 @@
 #define TAC_IF_ELSE 27
 #define TAC_VEC_DECLARATION 28
 #define TAC_VAR_DECLARATION 29
-#define TAC_PARAM 30
+#define TAC_PARAMS_FUNC_CALL 30
 
 typedef struct tac_node
 {
@@ -55,5 +55,12 @@ void tacPrintSingle(TAC *tac);
 void tacPrintBack(TAC *tac);
 TAC *tacGenerateCode(AST *node);
 TAC *tacJoin(TAC *t1, TAC *t2);
+TAC *makeParameter(TAC *code1, TAC *code2);
+TAC *makeFunc(AST *symbol, TAC *code1, TAC *code2);
+TAC *makeIfThen(TAC *expr, TAC *body);
+TAC *makeWhile(TAC *expr, TAC *body);
+TAC *makeIfThenElse(TAC *expr, TAC *cIf, TAC *cElse);
+TAC *makeCondJump(TAC *label, TAC *expr);
+TAC *makeIncondJump(TAC *label);
 
 #endif

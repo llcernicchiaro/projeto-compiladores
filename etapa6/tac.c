@@ -158,10 +158,13 @@ void tacPrintSingle(TAC *tac)
 
 void tacPrintBack(TAC *tac)
 {
-    TAC *node;
-
-    for (node = tac; node; node = node->prev)
-        tacPrintSingle(node);
+    if (!tac)
+        return;
+    else
+    {
+        tacPrintBack(tac->prev);
+        tacPrintSingle(tac);
+    }
 }
 
 TAC *tacJoin(TAC *tac1, TAC *tac2)

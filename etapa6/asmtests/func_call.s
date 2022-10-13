@@ -6,10 +6,10 @@
 	.type	a, @object
 	.size	a, 4
 a:
-	.long	1073741824
+	.long	2
 	.section	.rodata
 .LC0:
-	.string	"%f"
+	.string	"%d"
 	.text
 	.globl	alou
 	.type	alou, @function
@@ -22,23 +22,22 @@ alou:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	movss	a(%rip), %xmm0
-	cvtss2sd	%xmm0, %xmm0
+	subq	$16, %rsp
+	movl	%edi, -4(%rbp)
+	movl	$5, %esi
 	leaq	.LC0(%rip), %rdi
-	movl	$1, %eax
-	call	printf@PLT
 	movl	$0, %eax
-	call	sal
+	call	printf@PLT
 	nop
-	popq	%rbp
+	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE0:
 	.size	alou, .-alou
-	.globl	sal
-	.type	sal, @function
-sal:
+	.globl	main
+	.type	main, @function
+main:
 .LFB1:
 	.cfi_startproc
 	endbr64
@@ -47,32 +46,15 @@ sal:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	movl	$0, %eax
+	movl	a(%rip), %eax
+	movl	%eax, %edi
 	call	alou
-	nop
+	movl	$0, %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE1:
-	.size	sal, .-sal
-	.globl	main
-	.type	main, @function
-main:
-.LFB2:
-	.cfi_startproc
-	endbr64
-	pushq	%rbp
-	.cfi_def_cfa_offset 16
-	.cfi_offset 6, -16
-	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
-	movl	$0, %eax
-	popq	%rbp
-	.cfi_def_cfa 7, 8
-	ret
-	.cfi_endproc
-.LFE2:
 	.size	main, .-main
 	.ident	"GCC: (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0"
 	.section	.note.GNU-stack,"",@progbits

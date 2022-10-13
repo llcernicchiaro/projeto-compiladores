@@ -1,6 +1,12 @@
-int variable (10);
+int a (5);
+int sal() 
+{
+print a + 5 ;
+return a;
+
+}
 int main() 
 {
-print variable | variable ;
+print sal() ;
 
 }

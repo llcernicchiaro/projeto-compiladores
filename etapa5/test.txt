@@ -59,19 +59,11 @@ float b (2,5);
 #\
 
 int b (5);
-int v[10] 0 0 0 0 0 0 0 0 0 0;
-int x[2] 0 0;
+int x[2] 1 20;
 float a (2,5);
 
 float incn (int i char c float f )
   {
-    if (b==1) 
-    {
-      v[10] <- i + i;
-    };
-
-    while(b == 1) {
-        v[10] <- i + i;
-    };
-    return a;
+    print b "sal";
+    return incn(b c a);
   }

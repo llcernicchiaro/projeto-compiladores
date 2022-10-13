@@ -2,21 +2,25 @@
 	.text
 	.globl	a
 	.data
-	.align 4
+	.align 16
 	.type	a, @object
-	.size	a, 4
+	.size	a, 16
 a:
 	.long	5
+	.long	3
+	.long	2
+	.long	1
 	.globl	b
+	.bss
 	.align 4
 	.type	b, @object
 	.size	b, 4
 b:
-	.long	3
+	.zero	4
 	.text
-	.globl	main
-	.type	main, @function
-main:
+	.globl	sal
+	.type	sal, @function
+sal:
 .LFB0:
 	.cfi_startproc
 	endbr64
@@ -25,21 +29,42 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	movl	a(%rip), %eax
-	testl	%eax, %eax
-	je	.L2
-	movl	b(%rip), %eax
-	testl	%eax, %eax
-	je	.L2
-	movl	$97, %edi
-	call	putchar@PLT
-.L2:
-	movl	$0, %eax
+	movl	$3, %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE0:
+	.size	sal, .-sal
+	.section	.rodata
+.LC0:
+	.string	"%d"
+	.text
+	.globl	main
+	.type	main, @function
+main:
+.LFB1:
+	.cfi_startproc
+	endbr64
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movl	b(%rip), %eax
+	addl	$5, %eax
+	movl	%eax, 12+a(%rip)
+	movl	8+a(%rip), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movl	$5, %eax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE1:
 	.size	main, .-main
 	.ident	"GCC: (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0"
 	.section	.note.GNU-stack,"",@progbits

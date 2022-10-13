@@ -73,10 +73,24 @@ float incn (int i char c float f )
     };
     return a;
   }
-#\
 
-int variable (10);
+
+int x[2] 1 2;
 
 int main () {
-    print variable | variable;
+  x[1] <- 5;
+  print x[1];
   }
+#\
+
+int a (5);
+
+int sal () {
+  print a + 5;
+  return a;
+}
+
+int main () {
+  print sal();
+}
+

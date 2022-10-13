@@ -43,7 +43,7 @@ void generateASM(TAC *tac, FILE *fout)
                     "## TAC_BEGIN_FUN\n"
                     "\t.globl %s\n"
                     "%s:\n"
-                    "\tpushq	%%rbp\n"
+                    "\tpushq\t%%rbp\n"
                     "\tmovq	%%rsp, %%rbp\n",
                     tac->res->text, tac->res->text);
             break;
@@ -58,15 +58,22 @@ void generateASM(TAC *tac, FILE *fout)
             fprintf(fout, "## TAC_PRINT\n");
             if (tac->op1->type == SYMBOL_VARIABLE)
             {
-                fprintf(fout,
-                        "\tmovl	_%s(%%rip), %%eax\n"
-                        "\tmovl	%%eax, %%esi\n",
-                        removeChars(tac->op1->text, '"'));
-                fprintf(fout,
-                        "\tleaq	%s(%%rip), %%rdi\n"
-                        "\tmovl	$0, %%eax\n"
-                        "\tcall	printf@PLT\n",
-                        getPercentChar(tac->op1->dataType));
+                if (tac->op2)
+                {
+                    printf("ACERTOU\n");
+                }
+                else
+                {
+                    fprintf(fout,
+                            "\tmovl	_%s(%%rip), %%eax\n"
+                            "\tmovl	%%eax, %%esi\n",
+                            removeChars(tac->op1->text, '"'));
+                    fprintf(fout,
+                            "\tleaq	%s(%%rip), %%rdi\n"
+                            "\tmovl	$0, %%eax\n"
+                            "\tcall	printf@PLT\n",
+                            getPercentChar(tac->op1->dataType));
+                }
             }
             else
             {
@@ -234,26 +241,38 @@ void generateASM(TAC *tac, FILE *fout)
             break;
         case TAC_IF_ELSE:
             printASMElement(fout, "TAC_IF_ELSE");
-            break;
-        case TAC_VEC_DECLARATION:
-            printASMElement(fout, "TAC_VEC_DECLARATION");
-            break;
-        case TAC_VAR_DECLARATION:
-            printASMElement(fout, "TAC_VAR_DECLARATION");
-            break;
-        case TAC_PARAM:
-            printASMElement(fout, "TAC_PARAM");
+            fprintf(fout,
+                    "\tmovl	_%s(%%rip), %%eax\n"
+                    "\ttestl  %%eax, %%eax\n"
+                    "\tje	.%s\n",
+                    tac->res->text, tac->op1->text);
             break;
         case TAC_COPY:
             printASMElement(fout, "TAC_COPY");
+            if (!tac->op2)
+            {
+                fprintf(fout,
+                        "\tmovl	_%s(%%rip), %%eax\n"
+                        "\tmovl	%%eax, _%s(%%rip)\n",
+                        tac->op1->text, tac->res->text);
+            }
+            else
+            {
+                fprintf(fout,
+                        "\tmovl	%d+_%s(%%rip), %%eax\n"
+                        "\tmovl	%%eax, _%s(%%rip)\n",
+                        (int)(atoi(tac->op1->text) * sizeof(int)), tac->op2->text, tac->res->text);
+            }
             break;
         case TAC_LABEL:
             printASMElement(fout, "TAC_LABEL");
-            break;
-        case TAC_IFZ:
-            printASMElement(fout, "TAC_IFZ");
+            fprintf(fout,
+                    ".%s:\n",
+                    tac->res->text);
             break;
         case TAC_SYMBOL:
+        case TAC_VEC_DECLARATION:
+        case TAC_VAR_DECLARATION:
             // Fazer nada
             break;
         default:
